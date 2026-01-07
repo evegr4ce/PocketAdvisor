@@ -1,124 +1,172 @@
-# Pocket Advisor
-*What’s in your pocket*
+<div align="center">
 
-Smart subscription tracking, affordability limits, and personalized financial guidance to help you build financial margin—especially for middle- and lower-income users.
+# **Pocket Advisor**  
+### *What’s in your pocket*
 
----
+<!-- LOGO AREA -->
+<img src="./logo.png" alt="Pocket Advisor Logo" width="140"/>
 
-## Overview
+**Smart subscription intelligence and affordability guidance for real life.**  
+Helping middle- and lower-income users build financial margin, not just track spending.
 
-Pocket Advisor goes beyond tracking spending. It analyzes how much you actually use your subscriptions, determines what you can realistically afford, and provides actionable guidance through an integrated chatbot.
-
-Instead of only showing transactions, Pocket Advisor answers:
-- what to keep vs cancel
-- what you can afford (housing, auto, vacation)
-- what changes will improve your financial margin
+</div>
 
 ---
 
-## Key Features
+## 🚀 Overview
 
-### Financial Wellness Score
-- Real-time **wellness score** based on income, essential expenses, and discretionary spending
-- **Action steps** to improve financial wellness
+**Pocket Advisor** is a financial wellness web app that goes beyond budgeting.  
+It analyzes how much you actually use your subscriptions, determines what you can realistically afford, and gives you clear, personalized advice.
 
-### Subscription Usage Intelligence (Cost-per-Use)
-- Detects recurring subscriptions
-- Tracks **how much you used a subscription in a month**
-- Calculates **cost per use**
-- Gives advice:
-  - **Keep** (high value)
-  - **Remove** (low usage / high cost)
-  - **Better alternative** (when your usage pattern fits a cheaper plan/service)
+Instead of asking: *“What do you want to buy?”*  
+We answer: **“What is safe for you to spend?”**
 
-Example insight:
-> “Canceling this funds 3 weeks of groceries or $500 toward emergency savings in 4 months.”
+---
 
-### Smart Optimize
-- Identifies low-usage, high-cost subscriptions
-- One-click **Optimize** suggests subscriptions to cut for maximum impact
+## ✨ What Makes It Different
 
-### Affordability Engine
-Safe affordability caps based on real income + required expenses:
+Most finance apps show charts.  
+**Pocket Advisor tells you what to do.**
+
+- Not just tracking → **decision intelligence**  
+- Not generic budgets → **income-aware affordability**  
+- Not just subscriptions → **usage-based value scoring**  
+- Not just dashboards → **AI-powered personal advice**
+
+---
+
+## 🧠 Core Features
+
+### 📊 Financial Wellness Score
+A real-time score based on:
+- Income
+- Essential expenses
+- Discretionary spending
+
+You also get **action steps** to improve your financial health.
+
+---
+
+### 🔁 Subscription Usage Intelligence (Cost-Per-Use)
+We don’t just list subscriptions—we analyze value.
+
+For each subscription:
+- Track **how much you used it this month**
+- Calculate **cost per use**
+- Label it:
+  - **Keep** → high value  
+  - **Remove** → low usage, high cost  
+  - **Better alternative** → your usage fits a cheaper plan
+
+**Example Insight:**  
+> *“Canceling this subscription funds 3 weeks of groceries or $500 toward emergency savings in 4 months.”*
+
+---
+
+### ⚡ Smart Optimize
+- Detects low-usage, high-cost subscriptions
+- One-click **Optimize** recommends what to cut for the biggest financial impact
+
+---
+
+### 🏠 Affordability Engine
+Tells you what you can actually afford—before you make a costly mistake.
+
+Supports:
 - **Housing**
 - **Auto loans**
 - **Vacations**
-Shows caps, headroom, and risk level.
 
-### AI Chat Advisor
-Ask questions based on your data:
+Outputs:
+- Safe spending caps  
+- Available headroom  
+- Risk level (Low / Medium / High)
+
+---
+
+### 💬 AI Chat Advisor
+Ask questions based on *your* financial data:
+
 - “Is my spending this month okay?”
 - “Which subscriptions should I cancel?”
 - “Can I afford a $400 car payment?”
-Answers use your income, essentials, spending, subscriptions, and goals.
+- “How much can I spend on a vacation safely?”
+
+Answers are grounded in your:
+- Income  
+- Essentials  
+- Subscriptions  
+- Spending patterns  
+- Financial goals  
 
 ---
 
-## Screenshots
+## 🔍 How It Works
 
-> Put these images in the repo root (same folder as this README), or update the paths to wherever you store them.
+### 1️⃣ Input
+You enter:
+- Income + pay frequency  
+- Essential expenses (rent, utilities, groceries, insurance, minimum debt)  
+- Optional financial goals  
 
-### Notes / Planning
-![Notes](./280c8c99-b017-42c0-9e48-0a2be3589708.png)
+### 2️⃣ Analysis
+Pocket Advisor:
+- Identifies recurring charges as subscriptions  
+- Calculates **monthly usage + cost-per-use**  
+- Computes **safe affordability limits**  
+- Flags financial risk  
 
-### Tech Stack / Roles
-![Tech Stack](./510cc5bb-c0da-459d-a178-1f074dcf1f07.png)
-
-### Landing
-![Landing](./9fa933e6-f431-451c-a00b-de94ebc0180f.png)
-
-### Income Setup
-![Income](./fe740e46-4957-4578-8369-5d480f5828db.png)
-
-### Essential Expenses
-![Expenses](./fc2d8283-ee84-46c4-a682-0bcf089c5d36.png)
-
-### Dashboard
-![Dashboard](./176b2530-e430-42c2-a86c-21b70fac9f6c.png)
-
-### Subscriptions + Optimize
-![Subscriptions](./440ae972-e8e1-4513-8be0-5f7f9b07c4a7.png)
-
-### Housing Affordability
-![Housing](./34289f28-c721-44da-a08f-1fc9ea40c8ab.png)
+### 3️⃣ Action
+You receive:
+- Keep / remove / alternative subscription advice  
+- Safe-to-spend numbers  
+- Clear guardrails for housing, auto, and discretionary purchases  
+- Personalized AI guidance  
 
 ---
 
-## How It Works
+## 🛠 Tech Stack
 
-1. **User inputs**
-   - income + pay frequency
-   - essentials (rent, utilities, groceries, insurance, minimum debt)
-   - goals (optional)
+- **Web App**
+- **Frontend:** React  
+- **Backend:** Firebase  
+- **Data:** Seeded demo data (fake financial accounts for hackathon)
 
-2. **Analysis**
-   - identifies subscriptions from recurring charges
-   - calculates monthly usage + cost-per-use
-   - computes safe affordability caps + risk level
-
-3. **Outputs**
-   - keep/remove/alternative subscription recommendations
-   - safe-to-spend number and affordability headroom
-   - chatbot answers grounded in the user’s numbers
+**Team**  
+- Backend: Helen, Evelyn  
+- Frontend: Daniel, Savya  
 
 ---
 
-## Tech Stack
+## 🌱 Why It Matters
 
-- **Web app**
-- **Frontend:** React
-- **Backend:** Firebase
-- **Data:** Seeded demo data (fake accounts for hackathon)
+Many financial tools assume users have margin.  
+**Pocket Advisor is built for people who don’t.**
 
-**Team**
-- Backend: Helen, Evelyn
-- Frontend: Daniel, Savya
+It prioritizes:
+- Stability over convenience  
+- Essentials over impulse  
+- Long-term security over short-term comfort  
+
+The result: fewer financial mistakes, less stress, and real control over what’s in your pocket.
 
 ---
 
-## Future Enhancements
+## 🔮 Future Enhancements
 
-- Live bank integration (Plaid)
-- Auto-downgrade / auto-pause subscription actions
-- More alternative recommendations (plans, bundles)
-- Expanded affordability models and coaching
+- Live bank integration (Plaid)  
+- Auto-downgrade / auto-pause subscriptions  
+- Cheaper plan and bundle recommendations  
+- Deeper AI financial coaching  
+- Community and regional cost benchmarks  
+
+---
+
+<div align="center">
+
+### **Pocket Advisor**  
+**What’s in your pocket**
+
+Financial intelligence. Real affordability. Built for everyday life.
+
+</div>
