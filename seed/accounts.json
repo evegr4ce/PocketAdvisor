@@ -1,0 +1,22 @@
+[
+  {"id":"acc_1","userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","provider":"mock","name":"Checking","type":"checking","balance":2450.32,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_2","userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","provider":"mock","name":"Savings","type":"savings","balance":8200.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_3","userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","provider":"mock","name":"Checking","type":"checking","balance":1190.11,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_4","userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","provider":"mock","name":"Savings","type":"savings","balance":5400.20,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_5","userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","provider":"mock","name":"Checking","type":"checking","balance":3100.50,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_6","userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","provider":"mock","name":"Savings","type":"savings","balance":15000.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_7","userId":"tM7hQ2eL9nB3xY6cP1vR5kW8sDzJ","provider":"mock","name":"Checking","type":"checking","balance":650.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_8","userId":"tM7hQ2eL9nB3xY6cP1vR5kW8sDzJ","provider":"mock","name":"Savings","type":"savings","balance":2100.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_9","userId":"Yc9rL2tN5vB8xQ3pE6mH1sJ4dZwT","provider":"mock","name":"Checking","type":"checking","balance":1980.76,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_10","userId":"Yc9rL2tN5vB8xQ3pE6mH1sJ4dZwT","provider":"mock","name":"Savings","type":"savings","balance":9300.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_11","userId":"hQ5mS8vB2cL9xY3tN6pE1rD4wZkT","provider":"mock","name":"Checking","type":"checking","balance":720.40,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_12","userId":"hQ5mS8vB2cL9xY3tN6pE1rD4wZkT","provider":"mock","name":"Savings","type":"savings","balance":3900.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_13","userId":"mT2yN6hQeV5xL9oBsU0dR4cJ8wZp","provider":"mock","name":"Checking","type":"checking","balance":4100.25,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_14","userId":"mT2yN6hQeV5xL9oBsU0dR4cJ8wZp","provider":"mock","name":"Savings","type":"savings","balance":22100.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_15","userId":"Zp1vR5kW8sD2tM7hQeL9nB3xY6cJ","provider":"mock","name":"Checking","type":"checking","balance":1350.33,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_16","userId":"Zp1vR5kW8sD2tM7hQeL9nB3xY6cJ","provider":"mock","name":"Savings","type":"savings","balance":4800.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_17","userId":"QeV2xL5oBsUd9pR4cJ8wZmT0yN6h","provider":"mock","name":"Checking","type":"checking","balance":2590.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_18","userId":"QeV2xL5oBsUd9pR4cJ8wZmT0yN6h","provider":"mock","name":"Savings","type":"savings","balance":10400.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_19","userId":"cL9xY3tN6pE1rD4wZkThQ5mS8vB2","provider":"mock","name":"Checking","type":"checking","balance":890.00,"lastSyncAt":"2025-12-31T23:00:00Z"},
+  {"id":"acc_20","userId":"cL9xY3tN6pE1rD4wZkThQ5mS8vB2","provider":"mock","name":"Savings","type":"savings","balance":3500.00,"lastSyncAt":"2025-12-31T23:00:00Z"}
+]
