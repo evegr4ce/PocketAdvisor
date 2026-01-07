@@ -6,8 +6,7 @@
 <!-- LOGO AREA -->
 <img src="./logo.png" alt="Pocket Advisor Logo" width="140"/>
 
-**Smart subscription intelligence and affordability guidance for real life.**  
-Helping middle- and lower-income users build financial margin, not just track spending.
+
 
 </div>
 
