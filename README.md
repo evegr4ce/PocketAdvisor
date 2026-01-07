@@ -166,6 +166,6 @@ The result: fewer financial mistakes, less stress, and real control over what’
 ### **Pocket Advisor**  
 **What’s in your pocket**
 
-Financial intelligence. Real affordability. Built for everyday life.
+
 
 </div>
