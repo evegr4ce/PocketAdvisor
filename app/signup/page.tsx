@@ -201,7 +201,7 @@ export default function Signup() {
                     </h2>
 
                     <p className="text-sm text-gray-500 mb-4">
-                    Would you like to save money or get more money?
+                    Would you like to save or make more money?
                     </p>
 
                     <div className="flex flex-col gap-4">
@@ -220,7 +220,7 @@ export default function Signup() {
                         mode === "earn" ? "bg-blue-800 text-white" : "bg-gray-50 text-gray-900"
                         }`}
                     >
-                        Get More Money
+                        Make More Money
                     </button>
                     </div>
 
