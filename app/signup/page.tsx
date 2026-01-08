@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, Dispatch, SetStateAction } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -233,8 +235,11 @@ export default function Signup() {
                     </button>
 
                     <button
-                        onClick={() => console.log({ email, password, income, payFrequency, rent, utilities, groceries, insurance, debt, mode })}
                         className="w-full bg-blue-800 text-white hover:bg-blue-900 rounded-lg py-2.5"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/dashboard");
+                        }}
                     >
                         Submit
                     </button>

@@ -14,7 +14,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b bg-white">
+    <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
       <div className="flex gap-6">
         {navItems.map((item) => (
           <Link
@@ -33,3 +33,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

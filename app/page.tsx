@@ -1,9 +1,12 @@
 
 "use client";
 import { useState} from "react";
+import { useRouter } from "next/navigation";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
   return (
     <div>
       <section className="bg-white min-h-screen">
@@ -65,6 +68,10 @@ export default function Login() {
                 <button
                   type="submit"
                   className="w-full bg-blue-800 text-white hover:bg-blue-900 cursor-pointer focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/dashboard");
+                  }}
                 >
                   Sign in
                 </button>
