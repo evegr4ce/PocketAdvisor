@@ -1,3 +1,4 @@
+
 "use client";
 import { useState} from "react";
 export default function Login() {
@@ -7,21 +8,31 @@ export default function Login() {
     <div>
       <section className="bg-white min-h-screen">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-screen">
-          
+
           {/* ADD LOGOO HERE */}
+          <img
+              src="/pocket_logo.png"
+              alt="Pocket Advisor logo"
+              className="h-[230px] w-auto"
+            />
+
+
+
           <h1 className="flex items-center mb-6 text-3xl font-semibold text-black">
             PocketAdvisor
           </h1>
 
           <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 sm:max-w-md xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              
+
+
+
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                 Sign in to your account
               </h1>
 
               <form className="space-y-4 md:space-y-6" action="#">
-                
+
                 <div>
                   <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
                     Your email

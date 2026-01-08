@@ -29,7 +29,13 @@ export default function Signup() {
 
   return (
     <section className="bg-white min-h-screen">
+
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-screen">
+        <img
+              src="/pocket_logo.png"
+              alt="Pocket Advisor logo"
+              className=" ml-1 h-[230px] w-auto"
+            />
         <h1 className="mb-6 text-3xl font-semibold text-black">
           PocketAdvisor
         </h1>
