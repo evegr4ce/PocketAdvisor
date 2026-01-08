@@ -16,6 +16,8 @@ const purge = args.includes('--purge');
 // Resolve seed directory relative to repo root (one level up from scripts)
 const seedDir = path.join(__dirname, '..', 'seed');
 
+const serviceAccount = require('../serviceAccountKey.json');
+
 function loadJson(file) {
   const p = path.join(seedDir, file);
   const raw = fs.readFileSync(p, 'utf-8');
@@ -63,7 +65,7 @@ async function main() {
   if (!admin.apps.length) {
     try {
       admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+        credential: admin.credential.cert(serviceAccount),
         projectId
       });
     } catch (err) {
