@@ -12,7 +12,7 @@ type Subscription = {
   status: "active" | "flagged" | "canceled";
 };
 
-const userName = "Daniel";
+const userName = "You";
 
 const demoSubs: Subscription[] = [
   { id: "1", merchant: "Netflix", category: "Entertainment", monthly: 15.99, daysUsed: 18, status: "active" },
@@ -107,7 +107,7 @@ export default function SubscriptionsPage() {
                     <p className="text-sm text-slate-500">{sub.category}</p>
                   </td>
 
-                  {/* FIXED COLOR HERE */}
+
                   <td className={`px-6 py-4 font-semibold ${
                     sub.daysUsed <= 4 ? "text-[#d92d2d]" : "text-[#0a2540]"
                   }`}>
