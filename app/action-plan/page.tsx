@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Navbar from "@/components/navbar";
 
 type ActionItem = {
   id: string;
@@ -62,7 +63,7 @@ const demoData = {
       impact: "Build $1,200 in 6 months",
       completed: false,
     },
-  ],
+  ] as ActionItem[],
 };
 
 export default function ActionPlanPage() {
@@ -82,148 +83,174 @@ export default function ActionPlanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12">
-      <div className="mx-auto max-w-6xl space-y-10">
+    <>
+      {/* Navbar */}
+      <Navbar />
 
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-900">
-            Action Plan → {demoData.name}
-          </h1>
-          <p className="text-slate-500 mt-1">
-            Personalized financial insights based on your activity
-          </p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12">
+        <div className="mx-auto max-w-6xl space-y-10">
 
-        {/* Score Card */}
-        <div className="rounded-3xl bg-white p-10 shadow-sm border border-slate-200">
-          <div className="flex flex-col lg:flex-row items-center gap-10">
+          {/* Header */}
+          <div>
+            <h1 className="text-3xl font-semibold text-slate-900">
+              Action Plan → {demoData.name}
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Personalized financial insights based on your activity
+            </p>
+          </div>
 
-            {/* Score Ring */}
-            <div className="relative flex-shrink-0">
-              <div className="h-44 w-44 rounded-full bg-gradient-to-tr from-emerald-400 to-emerald-600 p-[10px]">
-                <div className="h-full w-full rounded-full bg-white flex flex-col items-center justify-center">
+          {/* Score Card */}
+          <div className="rounded-3xl bg-white p-10 shadow-sm border border-slate-200">
+            <div className="flex flex-col lg:flex-row items-center gap-10">
+
+              {/* Score Ring */}
+              <div className="relative w-44 h-44 flex items-center justify-center">
+                <svg className="absolute w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="8"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 45}
+                    strokeDashoffset={2 * Math.PI * 45 * (1 - demoData.score / 100)}
+                    className="transition-all duration-700 ease-out"
+                  />
+                </svg>
+
+                <div className="flex flex-col items-center justify-center">
                   <span className="text-5xl font-semibold text-slate-900">
                     {demoData.score}
                   </span>
                   <span className="text-sm text-slate-500">out of 100</span>
                 </div>
               </div>
-            </div>
 
-            {/* Text */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">🏆</span>
-                <h2 className="text-2xl font-semibold text-slate-900">
-                  Financial Wellness Score
-                </h2>
-              </div>
-
-              <p className="text-emerald-600 font-medium text-lg mb-2">
-                {demoData.grade}
-              </p>
-
-              <p className="text-slate-600 max-w-lg">
-                {demoData.summary}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {demoData.categories.map(cat => {
-            const percent = Math.round((cat.score / cat.max) * 100);
-            return (
-              <div
-                key={cat.id}
-                className="rounded-2xl bg-white p-6 border border-slate-200 shadow-sm hover:shadow-md transition"
-              >
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-slate-900">{cat.title}</h3>
-                  <span className="text-sm text-emerald-600 font-medium">
-                    {cat.score} / {cat.max}
-                  </span>
+              {/* Text */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">🏆</span>
+                  <h2 className="text-2xl font-semibold text-slate-900">
+                    Financial Wellness Score
+                  </h2>
                 </div>
 
-                <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-2">
-                  <div
-                    className="h-full bg-emerald-500 rounded-full transition-all"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
+                <p className="text-emerald-600 font-medium text-lg mb-2">
+                  {demoData.grade}
+                </p>
 
-                <p className="text-sm text-slate-500">{cat.tip}</p>
+                <p className="text-slate-600 max-w-lg">
+                  {demoData.summary}
+                </p>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Action Plan Section */}
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
-          <div
-            className="flex items-center justify-between cursor-pointer mb-6"
-            onClick={() => setOpen(!open)}
-          >
-            <h2 className="text-xl font-semibold text-slate-900">
-              Action Steps
-            </h2>
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600">
-              {actions.length} items
-            </span>
+            </div>
           </div>
 
-          {open && (
-            <div className="space-y-4">
-              {actions.map(action => (
+          {/* Category Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {demoData.categories.map(cat => {
+              const percent = Math.round((cat.score / cat.max) * 100);
+              return (
                 <div
-                  key={action.id}
-                  className={`rounded-xl border-l-4 p-5 ${priorityStyles(action.priority)}`}
+                  key={cat.id}
+                  className="rounded-2xl bg-white p-6 border border-slate-200 shadow-sm hover:shadow-md transition"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-white text-lg">
-                      {action.priority === "high" && "⚡"}
-                      {action.priority === "medium" && "📊"}
-                      {action.priority === "low" && "💡"}
-                    </div>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-semibold text-slate-900">{cat.title}</h3>
+                    <span className="text-sm text-emerald-600 font-medium">
+                      {cat.score} / {cat.max}
+                    </span>
+                  </div>
 
-                    <div className="flex-1">
-                      <span className="text-xs font-semibold uppercase">
-                        {action.priority} priority
-                      </span>
-                      <h3 className="font-semibold text-slate-900 mt-1">
-                        {action.title}
-                      </h3>
-                      <p className="text-sm text-slate-600 mt-1">
-                        {action.description}
-                      </p>
+                  <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-2">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
 
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-sm font-medium text-emerald-600">
-                          {action.impact}
+                  <p className="text-sm text-slate-500">{cat.tip}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Action Plan Section */}
+          <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
+            <div
+              className="flex items-center justify-between cursor-pointer mb-6"
+              onClick={() => setOpen(!open)}
+            >
+              <h2 className="text-xl font-semibold text-slate-900">
+                Action Steps
+              </h2>
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600">
+                {actions.length} items
+              </span>
+            </div>
+
+            {open && (
+              <div className="space-y-4">
+                {actions.map(action => (
+                  <div
+                    key={action.id}
+                    className={`rounded-xl border-l-4 p-5 ${priorityStyles(action.priority)}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-white text-lg">
+                        {action.priority === "high" && "⚡"}
+                        {action.priority === "medium" && "📊"}
+                        {action.priority === "low" && "💡"}
+                      </div>
+
+                      <div className="flex-1">
+                        <span className="text-xs font-semibold uppercase">
+                          {action.priority} priority
                         </span>
+                        <h3 className="font-semibold text-slate-900 mt-1">
+                          {action.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 mt-1">
+                          {action.description}
+                        </p>
 
-                        <button
-                          onClick={() => toggleComplete(action.id)}
-                          className={`text-sm px-3 py-1 rounded-lg border ${
-                            action.completed
-                              ? "bg-emerald-600 text-white border-emerald-600"
-                              : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                          }`}
-                        >
-                          {action.completed ? "Completed" : "Mark Complete"}
-                        </button>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-sm font-medium text-emerald-600">
+                            {action.impact}
+                          </span>
+
+                          <button
+                            onClick={() => toggleComplete(action.id)}
+                            className={`text-sm px-3 py-1 rounded-lg border ${
+                              action.completed
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                            }`}
+                          >
+                            {action.completed ? "Completed" : "Mark Complete"}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
 
+        </div>
       </div>
-    </div>
+    </>
   );
 }
