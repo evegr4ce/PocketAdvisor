@@ -1,0 +1,12 @@
+[
+  {"id":"goal_1","userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","name":"Emergency Fund","type":"emergency","targetAmount":5000,"targetDate":"2026-06-30","currentAmount":1200,"status":"active","priority":1},
+  {"id":"goal_2","userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","name":"Pay Off Credit Card","type":"debt","targetAmount":3000,"targetDate":"2026-03-31","currentAmount":800,"status":"active","priority":1},
+  {"id":"goal_3","userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","name":"Vacation Fund","type":"travel","targetAmount":4000,"targetDate":"2026-08-31","currentAmount":900,"status":"active","priority":2},
+  {"id":"goal_4","userId":"tM7hQ2eL9nB3xY6cP1vR5kW8sDzJ","name":"Starter Emergency Fund","type":"emergency","targetAmount":1000,"targetDate":"2026-02-28","currentAmount":200,"status":"active","priority":1},
+  {"id":"goal_5","userId":"Yc9rL2tN5vB8xQ3pE6mH1sJ4dZwT","name":"Home Down Payment","type":"home","targetAmount":15000,"targetDate":"2027-01-31","currentAmount":2500,"status":"active","priority":2},
+  {"id":"goal_6","userId":"hQ5mS8vB2cL9xY3tN6pE1rD4wZkT","name":"Emergency Fund","type":"emergency","targetAmount":3000,"targetDate":"2026-05-31","currentAmount":400,"status":"active","priority":1},
+  {"id":"goal_7","userId":"mT2yN6hQeV5xL9oBsU0dR4cJ8wZp","name":"Invest Starter","type":"investing","targetAmount":2000,"targetDate":"2026-09-30","currentAmount":500,"status":"active","priority":3},
+  {"id":"goal_8","userId":"Zp1vR5kW8sD2tM7hQeL9nB3xY6cJ","name":"Emergency Fund","type":"emergency","targetAmount":2500,"targetDate":"2026-04-30","currentAmount":900,"status":"active","priority":1},
+  {"id":"goal_9","userId":"QeV2xL5oBsUd9pR4cJ8wZmT0yN6h","name":"Car Repair Fund","type":"auto","targetAmount":1200,"targetDate":"2026-02-28","currentAmount":300,"status":"active","priority":1},
+  {"id":"goal_10","userId":"cL9xY3tN6pE1rD4wZkThQ5mS8vB2","name":"Emergency Fund","type":"emergency","targetAmount":2000,"targetDate":"2026-03-31","currentAmount":600,"status":"active","priority":1}
+]

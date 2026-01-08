@@ -1,0 +1,112 @@
+[
+  {
+    "uid": "vBqg5p0S5bVJw3sCkQzN7YdH1mRa",
+    "email": "alex.morgan@example.com",
+    "displayName": "Alex Morgan",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-12-10T15:22:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 82000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT",
+    "email": "brianna.lee@example.com",
+    "displayName": "Brianna Lee",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-11-20T11:10:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 61000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "pR4cJ8wZmT0yN6hQeV2xL5oBsUd9",
+    "email": "cameron.diaz@example.com",
+    "displayName": "Cameron Diaz",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-12-01T09:05:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 95000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "tM7hQ2eL9nB3xY6cP1vR5kW8sDzJ",
+    "email": "dylan.kim@example.com",
+    "displayName": "Dylan Kim",
+    "verified": false,
+    "role": "user",
+    "createdAt": "2025-10-15T13:00:00Z",
+    "onboardingStatus": "in_progress",
+    "income": { "amount": 48000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "Yc9rL2tN5vB8xQ3pE6mH1sJ4dZwT",
+    "email": "emma.watson@example.com",
+    "displayName": "Emma Watson",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-12-18T17:45:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 72000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "hQ5mS8vB2cL9xY3tN6pE1rD4wZkT",
+    "email": "franklin.owens@example.com",
+    "displayName": "Franklin Owens",
+    "verified": false,
+    "role": "user",
+    "createdAt": "2025-09-25T08:30:00Z",
+    "onboardingStatus": "in_progress",
+    "income": { "amount": 56000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "mT2yN6hQeV5xL9oBsU0dR4cJ8wZp",
+    "email": "grace.huang@example.com",
+    "displayName": "Grace Huang",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-12-22T20:12:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 103000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "Zp1vR5kW8sD2tM7hQeL9nB3xY6cJ",
+    "email": "henry.jones@example.com",
+    "displayName": "Henry Jones",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-11-05T12:00:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 67000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "QeV2xL5oBsUd9pR4cJ8wZmT0yN6h",
+    "email": "isabella.rossi@example.com",
+    "displayName": "Isabella Rossi",
+    "verified": true,
+    "role": "user",
+    "createdAt": "2025-12-28T14:20:00Z",
+    "onboardingStatus": "complete",
+    "income": { "amount": 78000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  },
+  {
+    "uid": "cL9xY3tN6pE1rD4wZkThQ5mS8vB2",
+    "email": "jackson.patel@example.com",
+    "displayName": "Jackson Patel",
+    "verified": false,
+    "role": "user",
+    "createdAt": "2025-10-02T07:50:00Z",
+    "onboardingStatus": "in_progress",
+    "income": { "amount": 52000, "frequency": "monthly" },
+    "preferences": { "currency": "USD" }
+  }
+]

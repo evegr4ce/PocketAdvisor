@@ -1,0 +1,18 @@
+[
+  {"userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","category":"groceries","period":"monthly","amount":600,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":520,"overBudget":false},
+  {"userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","category":"rent","period":"monthly","amount":2000,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":2000,"overBudget":false},
+  {"userId":"vBqg5p0S5bVJw3sCkQzN7YdH1mRa","category":"utilities","period":"monthly","amount":250,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":210,"overBudget":false},
+  {"userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","category":"groceries","period":"monthly","amount":500,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":480,"overBudget":false},
+  {"userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","category":"rent","period":"monthly","amount":1600,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":1600,"overBudget":false},
+  {"userId":"Kx7nA2fQpL9uZ3tYcR1wE6mDsBvT","category":"utilities","period":"monthly","amount":220,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":230,"overBudget":true},
+  {"userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","category":"groceries","period":"monthly","amount":700,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":650,"overBudget":false},
+  {"userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","category":"mortgage","period":"monthly","amount":2600,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":2600,"overBudget":false},
+  {"userId":"pR4cJ8wZmT0yN6hQeV2xL5oBsUd9","category":"insurance","period":"monthly","amount":180,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":180,"overBudget":false},
+  {"userId":"tM7hQ2eL9nB3xY6cP1vR5kW8sDzJ","category":"groceries","period":"monthly","amount":400,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":420,"overBudget":true},
+  {"userId":"Yc9rL2tN5vB8xQ3pE6mH1sJ4dZwT","category":"groceries","period":"monthly","amount":550,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":530,"overBudget":false},
+  {"userId":"hQ5mS8vB2cL9xY3tN6pE1rD4wZkT","category":"groceries","period":"monthly","amount":450,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":460,"overBudget":true},
+  {"userId":"mT2yN6hQeV5xL9oBsU0dR4cJ8wZp","category":"groceries","period":"monthly","amount":650,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":600,"overBudget":false},
+  {"userId":"Zp1vR5kW8sD2tM7hQeL9nB3xY6cJ","category":"groceries","period":"monthly","amount":500,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":480,"overBudget":false},
+  {"userId":"QeV2xL5oBsUd9pR4cJ8wZmT0yN6h","category":"groceries","period":"monthly","amount":580,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":570,"overBudget":false},
+  {"userId":"cL9xY3tN6pE1rD4wZkThQ5mS8vB2","category":"groceries","period":"monthly","amount":420,"periodStart":"2025-12-01","periodEnd":"2025-12-31","spentToDate":410,"overBudget":false}
+]

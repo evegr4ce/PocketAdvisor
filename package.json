@@ -8,9 +8,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "firebase": "^12.7.0",
     "next": "14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
+=======
+    "firebase": "^12.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "seed:firestore": "node scripts/seedFirestore.js"
+>>>>>>> 0a59871c2906f89201584f7b6180c79ff5c96c56
   }
 }
