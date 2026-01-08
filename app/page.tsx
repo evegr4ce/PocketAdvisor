@@ -9,14 +9,11 @@ export default function Login() {
       <section className="bg-white min-h-screen">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-screen">
 
-          {/* ADD LOGOO HERE */}
           <img
               src="/pocket_logo.png"
               alt="Pocket Advisor logo"
-              className="h-[230px] w-auto"
+              className=" translate-y-13 ml-2 h-[230px] w-auto"
             />
-
-
 
           <h1 className="flex items-center mb-6 text-3xl font-semibold text-black">
             PocketAdvisor
