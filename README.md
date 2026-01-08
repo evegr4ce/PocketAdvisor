@@ -34,3 +34,48 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Seeding Firestore (Mock Data)
+
+Seed files live in [seed](seed). Use the local seeder to load them into Firestore, or the Cloud Function to reset data.
+
+### Local Seeder
+
+1. Install admin SDK:
+
+```bash
+npm install --save firebase-admin
+```
+
+2. Dry run (no writes):
+
+```bash
+npm run seed:firestore -- --dry-run
+```
+
+3. Write to Firestore (requires credentials):
+
+```bash
+export FIREBASE_PROJECT_ID=your-project-id
+export GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/serviceAccount.json
+npm run seed:firestore
+```
+
+Add `--purge` to clear existing docs before seeding.
+
+### Cloud Functions (Reset Seed Data)
+
+Functions are in [functions](functions). Deploy with Firebase CLI and call the `resetSeedData` callable (admin/demo claim required):
+
+```bash
+firebase deploy --only functions
+```
+
+Client example:
+
+```ts
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
+const fn = httpsCallable(getFunctions(), 'resetSeedData');
+await fn({ collections: ['users','accounts','budgets','goals','subscriptions','transactions'] });
+```
