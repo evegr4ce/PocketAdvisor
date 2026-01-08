@@ -30,10 +30,6 @@ export default function Navbar() {
           </Link>
         ))}
       </div>
-
-      <div className="text-sm text-gray-600">
-        Profile
-      </div>
     </nav>
   );
 }
