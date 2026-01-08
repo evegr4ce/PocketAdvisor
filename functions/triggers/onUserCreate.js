@@ -2,7 +2,7 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
-function onUserCreate(user) {
+exports.onUserCreate = async function onUserCreate(user) {
   const userRef = db.collection("users").doc(user.uid);
 
   return userRef.set(
@@ -17,5 +17,3 @@ function onUserCreate(user) {
     { merge: true }
   );
 }
-
-module.exports = onUserCreate;
