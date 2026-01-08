@@ -79,3 +79,17 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 const fn = httpsCallable(getFunctions(), 'resetSeedData');
 await fn({ collections: ['users','accounts','budgets','goals','subscriptions','transactions'] });
 ```
+
+## How to run the Chatbot
+For a free and functional AI conversational tool, you will need to install and have a running model here is the set up
+
+### One time Installation
+Download ollama from [this site](https://ollama.com/)
+
+### Every time you want to use the chatbot
+run this code and leave it running in the terminal
+
+```ts
+ollama pull llama3.1:8b
+ollama run llama3.1:8b
+```
