@@ -73,6 +73,13 @@ export default function Signup() {
                 >
                   Continue
                 </button>
+
+                <p className="text-sm font-light text-gray-500">
+                  Go back to{" "}
+                  <a href="/" className="font-bold text-primary-600 hover:underline">
+                     Log In
+                  </a>
+                </p>
               </>
             )}
 
