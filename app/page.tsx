@@ -13,7 +13,7 @@ export default function Login() {
           <img
               src="/pocket_logo.png"
               alt="Pocket Advisor logo"
-              className="h-[230px] w-auto"
+              className=" translate-y-13 ml-2 h-[230px] w-auto"
             />
 
 
