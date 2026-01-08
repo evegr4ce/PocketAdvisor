@@ -7,6 +7,7 @@ const navItems = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Action Plan", href: "/action-plan" },
   { name: "Subscriptions", href: "/subscriptions" },
+  { name: "Affordability", href: "/affordability" },
   { name: "Chatbot", href: "/chat" },
 ];
 
