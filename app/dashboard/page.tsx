@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from "@/components/navbar";
+import Loader from "@/components/loader";
 import { useState, useMemo, useEffect } from "react";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -151,10 +152,14 @@ export default function Dashboard() {
   const grade = getGrade(wellnessScore);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-black">
-      <Navbar />
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="min-h-screen bg-[#f8f9fc] text-black">
+          <Navbar />
 
-      <div className="p-6 max-w-7xl mx-auto space-y-8">
+          <div className="p-6 max-w-7xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-semibold">
             Hello, {auth.currentUser?.email?.split("@")[0] ? 
@@ -286,7 +291,9 @@ export default function Dashboard() {
             </div>
           </>
         )}
+        </div>
       </div>
-    </div>
-  );
+    )}
+  </>
+);
 }

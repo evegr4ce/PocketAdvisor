@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/config";
 import Navbar from "@/components/navbar";
+import Loader from "@/components/loader";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 type ActionItem = {
@@ -264,14 +265,7 @@ export default function ActionPlanPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12 flex items-center justify-center">
-          <p className="text-slate-500">Loading your action plan...</p>
-        </div>
-      </>
-    );
+    return <Loader />;
   }
 
   return (
