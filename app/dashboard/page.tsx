@@ -227,15 +227,15 @@ export default function Dashboard() {
   return (
     <>
       <Navbar />
-      <div className="ml-64 min-h-screen bg-[#efeffcff] text-black px-6 py-12 flex gap-6">
+      <div className="ml-64 min-h-screen bg-[#efeffcff] text-black px-6 py-12">
         {loading ? (
-          <div className="flex items-center justify-center h-[70vh] flex-1">
+          <div className="flex items-center justify-center h-[70vh]">
             <div className="loader"></div>
           </div>
         ) : (
-          <>
+          <div className="flex gap-6 justify-center mx-auto">
             {/* Main Content */}
-            <div className="flex-1 max-w-4xl space-y-8">
+            <div className="w-full max-w-4xl space-y-8">
               <div>
                 <h1 className="text-3xl font-semibold">
                   Hello, {auth.currentUser?.email?.split("@")[0] ? 
@@ -416,7 +416,7 @@ export default function Dashboard() {
             </div>
 
             {/* Recent Transactions Sidebar */}
-            <div className="w-80 bg-white rounded-2xl border border-gray-200 p-6 pr-2 self-start sticky top-6" style={{ marginTop: '6rem' }}>
+            <div className="w-80 bg-white rounded-2xl border border-gray-200 p-6 pr-2 self-start sticky top-20 flex-shrink-0">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 pr-4">Recent Transactions</h2>
               <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto pr-4">
                 {transactions.length === 0 ? (
@@ -472,7 +472,7 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>
