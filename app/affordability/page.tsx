@@ -151,7 +151,7 @@ export default function AffordabilityPage() {
             </div>
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
               <p className="text-sm text-slate-500">Savings Balance</p>
-              <p className="text-2xl font-semibold text-emerald-600 mt-1">
+              <p className="text-2xl font-semibold text-[#282880] mt-1">
                 ${savingsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
@@ -173,7 +173,7 @@ export default function AffordabilityPage() {
                 onClick={() => setMode(tab as Mode)}
                 className={`px-5 py-2 text-sm font-medium rounded-lg transition ${
                   mode === tab
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[#645effff] text-white"
                     : "text-slate-600 hover:text-black"
                 }`}
               >
@@ -200,7 +200,7 @@ export default function AffordabilityPage() {
               </div>
               <span className={`text-sm px-3 py-1 rounded-full ${
                 housingCap >= recommendedHousing
-                  ? "bg-emerald-50 text-emerald-700"
+                  ? "bg-purple-100 text-[#645effff]"
                   : "bg-red-50 text-red-700"
               }`}>
                 Guideline: $0 - ${housingCap.toLocaleString('en-US', { maximumFractionDigits: 0 })}
@@ -215,7 +215,7 @@ export default function AffordabilityPage() {
               </div>
               <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
+                  className="h-full bg-[#645effff] rounded-full transition-all"
                   style={{ width: `${Math.min((recommendedHousing / housingCap) * 100, 100)}%` }}
                 />
               </div>
@@ -242,8 +242,8 @@ export default function AffordabilityPage() {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <p className="text-sm text-[#645effff]">
                 <strong>💡 Tip:</strong> Aim to keep housing costs to 30-35% of your gross income. This leaves room for other expenses and savings.
               </p>
             </div>
@@ -263,7 +263,7 @@ export default function AffordabilityPage() {
               </div>
               <span className={`text-sm px-3 py-1 rounded-full ${
                 autoCap > 0
-                  ? "bg-emerald-50 text-emerald-700"
+                  ? "bg-purple-100 text-[#645effff]"
                   : "bg-red-50 text-red-700"
               }`}>
                 Guideline: $0 - ${autoCap.toLocaleString('en-US', { maximumFractionDigits: 0 })}
@@ -277,7 +277,7 @@ export default function AffordabilityPage() {
               </div>
               <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 rounded-full transition-all"
+                  className="h-full bg-[#645effff] rounded-full transition-all"
                   style={{ width: `${Math.min((autoCap / (monthlyIncome * 0.15)) * 100, 100)}%` }}
                 />
               </div>
@@ -293,14 +293,14 @@ export default function AffordabilityPage() {
 
               <div className="bg-slate-50 rounded-xl p-6">
                 <p className="text-sm text-slate-500">Discretionary available</p>
-                <p className="text-3xl font-semibold text-emerald-600">
+                <p className="text-3xl font-semibold text-[#645effff]">
                   ${actualDiscretionary.toFixed(0)}
                 </p>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <p className="text-sm text-[#645effff]">
                 <strong>💡 Tip:</strong> Keep car payments to 10-15% of your gross income, including insurance and maintenance. Don't forget about depreciation!
               </p>
             </div>
@@ -320,8 +320,8 @@ export default function AffordabilityPage() {
               </div>
               <span className={`text-sm px-3 py-1 rounded-full ${
                 vacationTotal > 0
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-yellow-50 text-yellow-700"
+                  ? "bg-purple-100 text-[#645effff]"
+                  : "bg-purple-100 text-[#645effff]"
               }`}>
                 6-month goal: ${vacationTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </span>
@@ -334,7 +334,7 @@ export default function AffordabilityPage() {
               </div>
               <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-amber-500 rounded-full transition-all"
+                  className="h-full bg-[#645effff] rounded-full transition-all"
                   style={{ width: `${Math.min((vacationMonthly / discretionary) * 100, 100)}%` }}
                 />
               </div>
@@ -350,14 +350,14 @@ export default function AffordabilityPage() {
 
               <div className="bg-slate-50 rounded-xl p-6">
                 <p className="text-sm text-slate-500">6-month total</p>
-                <p className="text-3xl font-semibold text-amber-600">
+                <p className="text-3xl font-semibold text-[#645effff]">
                   ${vacationTotal.toFixed(0)}
                 </p>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <p className="text-sm text-[#645effff]">
                 <strong>💡 Tip:</strong> Save ${vacationMonthly.toFixed(0)}/month consistently. In 6 months you'll have ${vacationTotal.toFixed(0)} for your dream vacation!
               </p>
             </div>
