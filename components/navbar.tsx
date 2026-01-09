@@ -16,6 +16,19 @@ export default function Navbar() {
 
   return (
     <nav className="w-full flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-[#eeeefb]">
+      <div className="flex items-center gap-3">
+        <img
+          src="/pocket_logo.png"
+          alt="Pocket Advisor Logo"
+          className="h-15 w-13"
+        />
+        <h1
+          className="text-3xl font-semibold text-black"
+          style={{ fontFamily: "Arial, serif" }}
+        >
+          Pocket Advisor
+        </h1>
+      </div>
       <div className="flex gap-6">
         {navItems.map((item) => (
           <Link
