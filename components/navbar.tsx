@@ -7,10 +7,10 @@ import { signOut } from "firebase/auth";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
+  { name: "Advisor", href: "/chat" },
   { name: "Action Plan", href: "/action-plan" },
   { name: "Subscriptions", href: "/subscriptions" },
   { name: "Affordability", href: "/affordability" },
-  { name: "Advisor", href: "/chat" },
 ];
 
 export default function Navbar() {
@@ -41,10 +41,10 @@ export default function Navbar() {
             style={pathname === item.href ? { textUnderlineOffset: '0.4em' } : undefined}
           >
             {item.name === "Dashboard" && <img src="/home.png" alt="Home" className="w-5 h-5" />}
+            {item.name === "Advisor" && <img src="/comment.png" alt="Advisor" className="w-5 h-5" />}
             {item.name === "Action Plan" && <img src="/chart-histogram.png" alt="Action Plan" className="w-5 h-5" />}
             {item.name === "Subscriptions" && <img src="/bulb.png" alt="Subscriptions" className="w-5 h-5" />}
             {item.name === "Affordability" && <img src="/rocket-lunch.png" alt="Affordability" className="w-5 h-5" />}
-            {item.name === "Advisor" && <img src="/comment.png" alt="Advisor" className="w-5 h-5" />}
             {item.name}
           </Link>
         ))}
