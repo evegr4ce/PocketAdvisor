@@ -43,12 +43,9 @@ export default function Navbar() {
             key={item.name}
             href={item.href}
             className={`text-base text-white px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-            className={`text-sm font-medium px-4 py-3 rounded-lg transition ${
               pathname === item.href
                 ? "underline font-bold"
                 : "no-underline hover:text-white font-medium"
-                ? "bg-blue-100 text-blue-700 shadow-sm"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             }`}
             style={pathname === item.href ? { textUnderlineOffset: '0.4em' } : undefined}
           >
