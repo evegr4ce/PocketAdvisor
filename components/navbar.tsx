@@ -38,7 +38,11 @@ export default function Navbar() {
                 ? "underline font-bold"
                 : "no-underline hover:text-white font-medium"
             }`}
-            style={pathname === item.href ? { textUnderlineOffset: '0.4em' } : undefined}
+            style={
+              pathname === item.href
+                ? { textUnderlineOffset: "0.4em" }
+                : undefined
+            }
           >
             {item.name === "Dashboard" && <img src="/home.png" alt="Home" className="w-5 h-5" />}
             {item.name === "Advisor" && <img src="/comment.png" alt="Advisor" className="w-5 h-5" />}

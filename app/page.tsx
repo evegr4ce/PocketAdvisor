@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,7 +14,7 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       setError("Email and password are required");
       return;
@@ -39,45 +38,112 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <section className="bg-white min-h-screen">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-screen">
+    <div className="min-h-screen bg-[#efeffcff]">
+      <section className="flex items-start justify-center min-h-screen px-6 py-12">
+        <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          {/* Left Side - Branding & Message */}
+          <div className="flex flex-col justify-start space-y-6 hidden lg:flex pt-32">
+            <div>
+              <img
+                src="/pocket_logo.png"
+                alt="Pocket Advisor logo"
+                className="h-48 w-auto mb-2"
+              />
+              <h2 className="text-4xl font-bold text-slate-900 mb-2">
+                PocketAdvisor
+              </h2>
+              <p className="text-xl text-slate-600 leading-relaxed">
+                Take control of your finances with intelligent insights and
+                personalized recommendations.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
+                    <span className="text-[#282880] font-semibold">✓</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Smart Budget Analysis
+                  </h3>
+                  <p className="text-slate-600 mt-1">
+                    Understand where your money goes
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
+                    <span className="text-[#282880] font-semibold">✓</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    AI-Powered Advisor
+                  </h3>
+                  <p className="text-slate-600 mt-1">
+                    Get personalized financial guidance
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
+                    <span className="text-[#282880] font-semibold">✓</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Real-time Insights
+                  </h3>
+                  <p className="text-slate-600 mt-1">
+                    Monitor your financial health instantly
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <img
-              src="/pocket_logo.png"
-              alt="Pocket Advisor logo"
-              className=" translate-y-13 ml-2 h-[230px] w-auto"
-            />
+          {/* Right Side - Login Form */}
+          <div className="flex flex-col justify-start pt-32">
+            <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10">
+              <div className="mb-2 lg:hidden flex justify-center mb-6">
+                <img
+                  src="/pocket_logo.png"
+                  alt="Pocket Advisor logo"
+                  className="h-20 w-auto"
+                />
+              </div>
 
-          <h1 className="flex items-center mb-6 text-3xl font-semibold text-black">
-            PocketAdvisor
-          </h1>
-
-          <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 sm:max-w-md xl:p-0">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                Sign in to your account
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+                Welcome Back
               </h1>
+              <p className="text-slate-600 mb-8">
+                Sign in to your account to continue
+              </p>
 
               {error && (
-                <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-                  {error}
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
                 </div>
               )}
 
-              <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
-
+              <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-                    Your email
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-semibold text-slate-900 mb-3"
+                  >
+                    Email Address
                   </label>
                   <input
                     type="email"
                     name="email"
                     id="email"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                    placeholder="name@company.com"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#282880] focus:ring-offset-2 focus:border-transparent transition"
+                    placeholder="you@example.com"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -85,15 +151,18 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-semibold text-slate-900 mb-3"
+                  >
                     Password
                   </label>
                   <input
                     type="password"
                     name="password"
                     id="password"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#282880] focus:ring-offset-2 focus:border-transparent transition"
                     placeholder="••••••••"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -103,22 +172,36 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-800 text-white hover:bg-blue-900 disabled:bg-gray-400 cursor-pointer focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors"
+                  className="w-full py-3 px-4 bg-[#282880] text-white font-semibold rounded-lg hover:bg-blue-900 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#282880] focus:ring-offset-2"
                 >
-                  {loading ? "Signing in..." : "Sign in"}
+                  {loading ? "Signing in..." : "Sign In"}
                 </button>
 
-                <p className="text-sm font-light text-gray-500 text-center">
-                  Don&apos;t have an account yet?{" "}
-                  <a
-                    href="/signup"
-                    className="font-medium text-primary-600 hover:underline"
-                  >
-                    Sign up
-                  </a>
-                </p>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-3 bg-white text-slate-600">
+                      New to PocketAdvisor?
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                <a
+                  href="/signup"
+                  className="w-full py-3 px-4 border-2 border-[#282880] text-[#282880] font-semibold rounded-lg hover:bg-slate-50 transition-colors duration-200 text-center"
+                >
+                  Create Account
+                </a>
+                </div>
               </form>
             </div>
+
+            <p className="text-center text-slate-600 text-sm mt-8">
+              © 2025 PocketAdvisor. All rights reserved.
+            </p>
           </div>
         </div>
       </section>
