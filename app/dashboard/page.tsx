@@ -20,6 +20,8 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [essentialExpenses, setEssentialExpenses] = useState(0);
+  const [checkingBalance, setCheckingBalance] = useState(0);
+  const [savingsBalance, setSavingsBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +54,24 @@ export default function Dashboard() {
         }));
 
         setTransactions(transList);
+
+        // Fetch accounts
+        const accountsCol = collection(db, "accounts");
+        const accountsQ = query(accountsCol, where("userId", "==", user.uid));
+        const accountsSnap = await getDocs(accountsQ);
+
+        let checking = 0;
+        let savings = 0;
+        accountsSnap.docs.forEach((doc) => {
+          const data = doc.data();
+          if (data.type === "checking") {
+            checking = data.balance || 0;
+          } else if (data.type === "savings") {
+            savings = data.balance || 0;
+          }
+        });
+        setCheckingBalance(checking);
+        setSavingsBalance(savings);
       } catch (err) {
         console.error("Error fetching user data:", err);
       } finally {
@@ -148,9 +168,8 @@ export default function Dashboard() {
           <div className="text-center text-gray-500">Loading your data...</div>
         ) : (
           <>
-            {/* cards 2x2 */}
+            {/* top row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* card 1 */}
               <div className="rounded-2xl border border-gray-200 bg-white p-6">
                 <h3 className="text-sm font-medium text-gray-500">Month-to-date Spend</h3>
                 <p className="mt-2 text-xl font-semibold">
@@ -158,24 +177,45 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              {/* card 2 */}
               <div className="rounded-2xl border border-gray-200 bg-white p-6">
                 <h3 className="text-sm font-medium text-gray-500">Safe to Spend</h3>
                 <p className="mt-2 text-xl font-semibold text-green-600">
                   ${safeToSpend.toLocaleString()}
                 </p>
               </div>
+            </div>
 
-              {/* card 3 */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-6">
-                <h3 className="text-sm font-medium text-gray-500">Monthly Income</h3>
-                <p className="mt-2 text-xl font-semibold">
-                  ${monthlyIncome.toLocaleString()}
-                </p>
+            {/* bottom row: monthly income + accounts on left, wellness on right */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* left column: monthly income + checking/savings */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 h-[152px] flex flex-col justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500">Monthly Income</h3>
+                  <p className="mt-1 text-lg font-semibold">
+                    ${monthlyIncome.toLocaleString()}
+                  </p>
+                </div>
+
+                {/* checking and savings side-by-side */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-xs font-medium text-gray-500">Checking</h3>
+                    <p className="mt-1 text-sm font-semibold">
+                      ${checkingBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-medium text-gray-500">Savings</h3>
+                    <p className="mt-1 text-sm font-semibold">
+                      ${savingsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {/* card 4: wellness ring */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 flex items-center">
+              {/* right column: wellness score */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 h-[152px] flex items-center">
                 <div className="relative w-[120px] h-[120px] flex-shrink-0">
                   <svg width={size} height={size} className="transform -rotate-90">
                     <circle
