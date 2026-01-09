@@ -37,15 +37,15 @@ export default function Navbar() {
         />
       </div>
 
-      <div className="flex flex-col gap-4 flex-1">
+      <div className="flex flex-col gap-2 flex-1">
         {navItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className={`text-sm font-medium text-gray-600 px-4 py-3 rounded-lg transition border-b-2 ${
+            className={`text-sm font-medium px-4 py-3 rounded-lg transition ${
               pathname === item.href
-                ? "border-b-2 border-black"
-                : "border-b-2 border-transparent hover:text-black"
+                ? "bg-blue-100 text-blue-700 shadow-sm"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             }`}
           >
             {item.name}
