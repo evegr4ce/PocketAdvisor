@@ -8,7 +8,7 @@ const navItems = [
   { name: "Action Plan", href: "/action-plan" },
   { name: "Subscriptions", href: "/subscriptions" },
   { name: "Affordability", href: "/affordability" },
-  { name: "Chatbot", href: "/chat" },
+  { name: "Advisor", href: "/chat" },
 ];
 
 export default function Navbar() {

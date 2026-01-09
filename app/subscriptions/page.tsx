@@ -126,7 +126,7 @@ export default function SubscriptionsPage() {
               onClick={() => setShowOptimize(true)}
               className="mt-4 w-full rounded-lg bg-[#0050c8] py-2 text-white font-medium hover:bg-[#003b95]"
             >
-              ✨ Optimize Now
+              Optimize Now
             </button>
           </div>
         </div>

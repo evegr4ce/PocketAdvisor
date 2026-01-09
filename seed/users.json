@@ -148,6 +148,21 @@
       "debt": 275
     },
     "createdAt": "2025-10-02T07:50:00Z"
+  },
+  {
+    "uid": "tEtRnEQ3fdM3wlVRJjmoul90OZ43",
+    "email": "test.user@example.com",
+    "monthlyIncome": 4500,
+    "payFrequency": "biweekly",
+    "mode": "earn",
+    "essentialExpenses": {
+      "rent": 1100,
+      "utilities": 140,
+      "groceries": 350,
+      "insurance": 180,
+      "debt": 200
+    },
+    "createdAt": "2026-01-08T12:00:00Z"
   }
 ]
 

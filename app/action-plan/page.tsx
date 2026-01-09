@@ -1,5 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
 import Navbar from "@/components/navbar";
 
 type ActionItem = {
@@ -30,45 +33,175 @@ const demoData = {
     { id: "buffer", title: "Spending Buffer", score: 25, max: 25, tip: "Healthy spending buffer maintained!" },
     { id: "flex", title: "Financial Flexibility", score: 25, max: 25, tip: "Good room for savings and fun!" },
   ],
-  actions: [
-    {
-      id: "a1",
-      priority: "high",
-      title: "Review low-usage subscriptions",
-      description: "Cancel or pause subscriptions you rarely use this month.",
-      impact: "Save $40/month",
-      completed: false,
-    },
-    {
-      id: "a2",
-      priority: "medium",
-      title: "Reduce dining expenses",
-      description: "Food & dining is high. Try meal prepping 2–3 days per week.",
-      impact: "Save $120/month",
-      completed: false,
-    },
-    {
-      id: "a3",
-      priority: "medium",
-      title: "Implement a shopping pause",
-      description: "Avoid discretionary purchases for 30 days.",
-      impact: "Save $200/month",
-      completed: false,
-    },
-    {
-      id: "a4",
-      priority: "low",
-      title: "Grow emergency fund",
-      description: "Move 20% of leftover cash into savings each month.",
-      impact: "Build $1,200 in 6 months",
-      completed: false,
-    },
-  ] as ActionItem[],
+};
+
+type Subscription = {
+  merchant: string;
+  amount: number;
+  daysUsed: number;
+};
+
+type Transaction = {
+  amount: number;
+  category?: string;
+  merchant?: string;
+};
+
+type UserData = {
+  monthlyIncome: number;
+  essentialExpenses: number;
 };
 
 export default function ActionPlanPage() {
-  const [actions, setActions] = useState<ActionItem[]>(demoData.actions);
+  const [user, setUser] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actions, setActions] = useState<ActionItem[]>([]);
   const [open, setOpen] = useState(true);
+  const [score, setScore] = useState(0);
+  const [grade, setGrade] = useState("Excellent");
+  const [summary, setSummary] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+
+      try {
+        // Fetch user data
+        const usersRef = collection(db, "users");
+        const userQuery = query(usersRef, where("uid", "==", currentUser.uid));
+        const userSnap = await getDocs(userQuery);
+
+        if (!userSnap.empty) {
+          const userData = userSnap.docs[0].data() as UserData;
+          setUserData(userData);
+        }
+
+        // Fetch transactions
+        const transRef = collection(db, "transactions");
+        const transQuery = query(transRef, where("userId", "==", currentUser.uid));
+        const transSnap = await getDocs(transQuery);
+        const transData = transSnap.docs.map(doc => doc.data() as Transaction);
+        setTransactions(transData);
+
+        // Fetch subscriptions
+        const subsRef = collection(db, "subscriptions");
+        const subsQuery = query(subsRef, where("userId", "==", currentUser.uid));
+        const subsSnap = await getDocs(subsQuery);
+        const subsData = subsSnap.docs.map(doc => doc.data() as Subscription);
+        setSubscriptions(subsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Generate action items based on data
+  useEffect(() => {
+    if (!userData || transactions.length === 0) return;
+
+    const generatedActions: ActionItem[] = [];
+    const monthlyIncome = userData.monthlyIncome || 0;
+    const essentialExpenses = userData.essentialExpenses || 0;
+
+    // Analyze spending
+    const totalSpent = transactions
+      .filter(t => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    const essentialsRatio = essentialExpenses / monthlyIncome;
+    const discretionarySpent = totalSpent - essentialExpenses;
+    const remainingBudget = monthlyIncome - totalSpent;
+
+    // Action 1: Low-usage subscriptions
+    const lowUsageSubs = subscriptions.filter(s => s.daysUsed <= 4);
+    if (lowUsageSubs.length > 0) {
+      const savingsFromSubs = lowUsageSubs.reduce((sum, s) => sum + s.amount, 0);
+      generatedActions.push({
+        id: "a1",
+        priority: "high",
+        title: "Review low-usage subscriptions",
+        description: `You have ${lowUsageSubs.length} subscription(s) with fewer than 5 days of usage. Consider canceling: ${lowUsageSubs.map(s => s.merchant).join(", ")}.`,
+        impact: `Save $${savingsFromSubs.toFixed(0)}/month`,
+        completed: false,
+      });
+    }
+
+    // Action 2: High discretionary spending
+    if (discretionarySpent > monthlyIncome * 0.2) {
+      generatedActions.push({
+        id: "a2",
+        priority: "medium",
+        title: "Reduce discretionary spending",
+        description: `Your discretionary spending is $${discretionarySpent.toFixed(0)}/month (${((discretionarySpent / monthlyIncome) * 100).toFixed(0)}% of income). Try reducing by 10%.`,
+        impact: `Save $${(discretionarySpent * 0.1).toFixed(0)}/month`,
+        completed: false,
+      });
+    }
+
+    // Action 3: Build emergency fund
+    if (remainingBudget > 0) {
+      const emergencyTarget = monthlyIncome * 3;
+      generatedActions.push({
+        id: "a3",
+        priority: "low",
+        title: "Grow emergency fund",
+        description: `Set aside 10-20% of your surplus ($${(remainingBudget * 0.15).toFixed(0)}/month) for emergencies.`,
+        impact: `Build $${(remainingBudget * 0.15 * 6).toFixed(0)} in 6 months`,
+        completed: false,
+      });
+    } else {
+      // Action 3 alternative: Reduce essentials or spending
+      generatedActions.push({
+        id: "a3",
+        priority: "high",
+        title: "Balance your budget",
+        description: `You're spending more than your income. Review essentials and discretionary expenses to create a surplus.`,
+        impact: `Achieve positive cash flow`,
+        completed: false,
+      });
+    }
+
+    // Calculate score
+    let calculatedScore = 100;
+    if (essentialsRatio > 0.5) calculatedScore -= 15; // Too much on essentials
+    if (discretionarySpent > monthlyIncome * 0.3) calculatedScore -= 20; // Too much discretionary
+    if (lowUsageSubs.length > 0) calculatedScore -= 5; // Wasting on subscriptions
+    if (remainingBudget < monthlyIncome * 0.1) calculatedScore -= 15; // Not enough savings
+
+    calculatedScore = Math.max(20, Math.min(100, calculatedScore));
+
+    let calculatedGrade = "Excellent";
+    if (calculatedScore >= 80) calculatedGrade = "Excellent";
+    else if (calculatedScore >= 60) calculatedGrade = "Good";
+    else if (calculatedScore >= 40) calculatedGrade = "Fair";
+    else calculatedGrade = "Needs Improvement";
+
+    let calculatedSummary = "";
+    if (calculatedScore >= 80) {
+      calculatedSummary = "You're doing well! Your finances are balanced and healthy.";
+    } else if (remainingBudget > 0) {
+      calculatedSummary = `You have ${generatedActions.length} action(s) to improve your financial health. Focus on the high-priority items first.`;
+    } else {
+      calculatedSummary = "Your spending exceeds your income. Review and adjust your budget immediately.";
+    }
+
+    setScore(calculatedScore);
+    setGrade(calculatedGrade);
+    setSummary(calculatedSummary);
+    setActions(generatedActions.length > 0 ? generatedActions : demoData.actions);
+  }, [userData, transactions, subscriptions]);
 
   const toggleComplete = (id: string) => {
     setActions(prev =>
@@ -82,6 +215,17 @@ export default function ActionPlanPage() {
     return "border-blue-500 bg-blue-50 text-blue-700";
   };
 
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12 flex items-center justify-center">
+          <p className="text-slate-500">Loading your action plan...</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       {/* Navbar */}
@@ -93,7 +237,7 @@ export default function ActionPlanPage() {
           {/* Header */}
           <div>
             <h1 className="text-3xl font-semibold text-slate-900">
-              Action Plan → {demoData.name}
+              Action Plan
             </h1>
             <p className="text-slate-500 mt-1">
               Personalized financial insights based on your activity
@@ -124,14 +268,14 @@ export default function ActionPlanPage() {
                     strokeWidth="8"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 45}
-                    strokeDashoffset={2 * Math.PI * 45 * (1 - demoData.score / 100)}
+                    strokeDashoffset={2 * Math.PI * 45 * (1 - score / 100)}
                     className="transition-all duration-700 ease-out"
                   />
                 </svg>
 
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-5xl font-semibold text-slate-900">
-                    {demoData.score}
+                    {Math.round(score)}
                   </span>
                   <span className="text-sm text-slate-500">out of 100</span>
                 </div>
@@ -140,50 +284,20 @@ export default function ActionPlanPage() {
               {/* Text */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🏆</span>
                   <h2 className="text-2xl font-semibold text-slate-900">
                     Financial Wellness Score
                   </h2>
                 </div>
 
                 <p className="text-emerald-600 font-medium text-lg mb-2">
-                  {demoData.grade}
+                  {grade}
                 </p>
 
                 <p className="text-slate-600 max-w-lg">
-                  {demoData.summary}
+                  {summary}
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Category Breakdown */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {demoData.categories.map(cat => {
-              const percent = Math.round((cat.score / cat.max) * 100);
-              return (
-                <div
-                  key={cat.id}
-                  className="rounded-2xl bg-white p-6 border border-slate-200 shadow-sm hover:shadow-md transition"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="font-semibold text-slate-900">{cat.title}</h3>
-                    <span className="text-sm text-emerald-600 font-medium">
-                      {cat.score} / {cat.max}
-                    </span>
-                  </div>
-
-                  <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-2">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-
-                  <p className="text-sm text-slate-500">{cat.tip}</p>
-                </div>
-              );
-            })}
           </div>
 
           {/* Action Plan Section */}
@@ -208,12 +322,6 @@ export default function ActionPlanPage() {
                     className={`rounded-xl border-l-4 p-5 ${priorityStyles(action.priority)}`}
                   >
                     <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-white text-lg">
-                        {action.priority === "high" && "⚡"}
-                        {action.priority === "medium" && "📊"}
-                        {action.priority === "low" && "💡"}
-                      </div>
-
                       <div className="flex-1">
                         <span className="text-xs font-semibold uppercase">
                           {action.priority} priority
