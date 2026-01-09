@@ -55,6 +55,13 @@ export default function SubscriptionsPage() {
   const monthlySavings = suggested.reduce((sum, s) => sum + s.amount, 0);
   const yearlySavings = monthlySavings * 12;
   const userName = auth.currentUser?.email?.split("@")[0] || "You";
+  
+  // Calculate weeks of groceries (assuming ~$250/month grocery budget = ~$58/week)
+  const groceryBudgetPerWeek = 250 / 4.33;
+  const weeksOfGroceries = Math.round(monthlySavings / groceryBudgetPerWeek);
+  
+  // Calculate months to save $500
+  const monthsToSave500 = Math.ceil(500 / monthlySavings);
 
   const cancelSuggested = async () => {
     const user = auth.currentUser;
@@ -206,7 +213,7 @@ export default function SubscriptionsPage() {
                     </div>
 
                     <div className="mt-3 bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
-                      <p className="font-medium text-slate-700 mb-1">AI alternatives:</p>
+                      <p className="font-medium text-slate-700 mb-1">Alternatives:</p>
                       <ul className="space-y-1">
                         <li>→ Switch to free options</li>
                         <li>→ Downgrade to a cheaper plan</li>
@@ -222,7 +229,7 @@ export default function SubscriptionsPage() {
                   {userName}, this saves you ${monthlySavings.toFixed(2)}/mo (${yearlySavings.toFixed(2)}/yr)
                 </p>
                 <p className="text-sm text-slate-500 mt-1">
-                  That’s about 3 weeks of groceries or $500 toward emergency savings in 4 months.
+                  That's about {weeksOfGroceries} week{weeksOfGroceries !== 1 ? 's' : ''} of groceries or $500 toward emergency savings in {monthsToSave500} month{monthsToSave500 !== 1 ? 's' : ''}.
                 </p>
 
                 <div className="mt-4 flex gap-3">

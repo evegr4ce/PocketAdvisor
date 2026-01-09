@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/navbar";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -9,15 +9,8 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 type Mode = "housing" | "auto" | "vacation";
 
 type UserData = {
-  name: string;
   monthlyIncome: number;
-  essentialExpenses: {
-    rent: number;
-    utilities: number;
-    groceries: number;
-    insurance: number;
-    debt: number;
-  };
+  essentialExpenses: number;
 };
 
 type Account = {
@@ -27,10 +20,16 @@ type Account = {
   name: string;
 };
 
+type Transaction = {
+  amount: number;
+  category?: string;
+};
+
 export default function AffordabilityPage() {
   const [mode, setMode] = useState<Mode>("housing");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,15 +48,8 @@ export default function AffordabilityPage() {
         if (!userSnap.empty) {
           const data = userSnap.docs[0].data();
           setUserData({
-            name: user.email?.split("@")[0] || "User",
             monthlyIncome: data.monthlyIncome || 0,
-            essentialExpenses: data.essentialExpenses || {
-              rent: 0,
-              utilities: 0,
-              groceries: 0,
-              insurance: 0,
-              debt: 0,
-            },
+            essentialExpenses: data.essentialExpenses || 0,
           });
         }
 
@@ -72,6 +64,14 @@ export default function AffordabilityPage() {
         })) as Account[];
 
         setAccounts(accountsList);
+
+        // Fetch transactions
+        const transRef = collection(db, "transactions");
+        const transQuery = query(transRef, where("userId", "==", user.uid));
+        const transSnap = await getDocs(transQuery);
+
+        const transList = transSnap.docs.map((doc) => doc.data() as Transaction);
+        setTransactions(transList);
       } catch (error) {
         console.error("Error fetching affordability data:", error);
       } finally {
@@ -82,24 +82,40 @@ export default function AffordabilityPage() {
     return () => unsubscribe();
   }, []);
 
+  // Calculate realistic spending from actual transactions
+  const actualMonthlySpending = useMemo(() => {
+    return transactions
+      .filter(t => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  }, [transactions]);
+
   // Calculations
-  const netIncome = userData?.monthlyIncome || 0;
-  const rent = userData?.essentialExpenses.rent || 0;
-  const totalEssentialExpenses = userData
-    ? Object.values(userData.essentialExpenses).reduce((sum, val) => sum + val, 0)
-    : 0;
-  const discretionary = netIncome - totalEssentialExpenses;
+  const monthlyIncome = userData?.monthlyIncome || 0;
+  const essentialExpenses = userData?.essentialExpenses || 0;
+  
+  // Discretionary = after essentials are paid
+  const discretionary = monthlyIncome - essentialExpenses;
+  
+  // Safe to spend per financial guidelines
+  const safeToSpend = monthlyIncome * 0.5; // 50% of income
+  const actualDiscretionary = safeToSpend - essentialExpenses;
+  
+  // Account balances
   const totalSavings = accounts.reduce((sum, acc) => sum + acc.balance, 0);
   const savingsBalance = accounts.find((a) => a.type === "savings")?.balance || 0;
   const checkingBalance = accounts.find((a) => a.type === "checking")?.balance || 0;
 
-  const housingCap = netIncome * 0.35;
-  const housingPercent = Math.min((rent / housingCap) * 100, 100);
-  const housingHeadroom = housingCap - rent;
+  // Housing: 35% of gross income (30-35% rule)
+  const housingCap = monthlyIncome * 0.35;
+  const recommendedHousing = housingCap;
+  const housingHeadroom = housingCap;
 
-  const autoCap = Math.min(netIncome * 0.1, discretionary * 0.35);
+  // Auto: 10-15% of gross income
+  const autoCap = monthlyIncome * 0.12;
+  const autoHeadroom = autoCap;
 
-  const vacationMonthly = discretionary * 0.2;
+  // Vacation: 10% of discretionary after essentials
+  const vacationMonthly = discretionary * 0.1;
   const vacationTotal = vacationMonthly * 6;
 
   return (
@@ -178,32 +194,32 @@ export default function AffordabilityPage() {
                   Housing Affordability
                 </h2>
                 <p className="text-sm text-slate-500">
-                  Based on 35% of your net income
+                  Based on 35% of your gross income ($${monthlyIncome.toLocaleString()}/month)
                 </p>
               </div>
               <span className={`text-sm px-3 py-1 rounded-full ${
-                housingHeadroom >= 0
+                housingCap >= recommendedHousing
                   ? "bg-emerald-50 text-emerald-700"
                   : "bg-red-50 text-red-700"
               }`}>
-                {housingHeadroom >= 0 ? "Within cap" : "Over cap"}
+                Guideline: $0 - ${housingCap.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </span>
             </div>
 
             {/* Progress */}
             <div>
               <div className="flex justify-between text-sm text-slate-600 mb-1">
-                <span>Current rent</span>
-                <span>${rent.toLocaleString()}</span>
+                <span>Safe housing budget</span>
+                <span>${recommendedHousing.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
               </div>
               <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${housingPercent}%` }}
+                  style={{ width: `${Math.min((recommendedHousing / housingCap) * 100, 100)}%` }}
                 />
               </div>
               <div className="flex justify-between text-xs text-slate-500 mt-1">
-                <span>{Math.round(housingPercent)}% of cap</span>
+                <span>100% guideline</span>
                 <span>Cap: ${housingCap.toFixed(0)}</span>
               </div>
             </div>
@@ -211,55 +227,80 @@ export default function AffordabilityPage() {
             {/* Stats */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-xl p-6">
-                <p className="text-sm text-slate-500">Safe monthly cap</p>
+                <p className="text-sm text-slate-500">Safe monthly cap (35%)</p>
                 <p className="text-3xl font-semibold text-slate-900">
                   ${housingCap.toFixed(0)}
                 </p>
               </div>
 
               <div className="bg-slate-50 rounded-xl p-6">
-                <p className="text-sm text-slate-500">Available headroom</p>
-                <p className={`text-3xl font-semibold ${
-                  housingHeadroom >= 0 ? "text-emerald-600" : "text-red-600"
-                }`}>
-                  ${housingHeadroom.toFixed(0)}
+                <p className="text-sm text-slate-500">Monthly income</p>
+                <p className="text-3xl font-semibold text-slate-900">
+                  ${monthlyIncome.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </p>
               </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Tip:</strong> Aim to keep housing costs to 30-35% of your gross income. This leaves room for other expenses and savings.
+              </p>
             </div>
           </div>
         )}
 
         {mode === "auto" && (
           <div className="rounded-3xl bg-white p-8 border border-slate-200 shadow-sm space-y-6">
-            <h2 className="text-xl font-semibold text-slate-900">
-              Auto Payment Affordability
-            </h2>
-            <p className="text-sm text-slate-500">
-              Your recommended payment is the lower of:
-              <br />• 10% of income
-              <br />• 35% of discretionary spending
-            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Auto Affordability
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Based on 12% of your gross income
+                </p>
+              </div>
+              <span className={`text-sm px-3 py-1 rounded-full ${
+                autoCap > 0
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-red-50 text-red-700"
+              }`}>
+                Guideline: $0 - ${autoCap.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm text-slate-600 mb-1">
+                <span>Safe auto budget</span>
+                <span>${autoCap.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+              </div>
+              <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all"
+                  style={{ width: `${Math.min((autoCap / (monthlyIncome * 0.15)) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-xl p-6">
-                <p className="text-sm text-slate-500">10% of income</p>
+                <p className="text-sm text-slate-500">Safe monthly cap (12%)</p>
                 <p className="text-3xl font-semibold text-slate-900">
-                  ${(netIncome * 0.1).toFixed(0)}
+                  ${autoCap.toFixed(0)}
                 </p>
               </div>
 
               <div className="bg-slate-50 rounded-xl p-6">
-                <p className="text-sm text-slate-500">35% of discretionary</p>
-                <p className="text-3xl font-semibold text-slate-900">
-                  ${(discretionary * 0.35).toFixed(0)}
+                <p className="text-sm text-slate-500">Discretionary available</p>
+                <p className="text-3xl font-semibold text-emerald-600">
+                  ${actualDiscretionary.toFixed(0)}
                 </p>
               </div>
             </div>
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
-              <p className="text-sm text-emerald-700">Your safe auto payment</p>
-              <p className="text-3xl font-semibold text-emerald-700">
-                ${autoCap.toFixed(0)}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Tip:</strong> Keep car payments to 10-15% of your gross income, including insurance and maintenance. Don't forget about depreciation!
               </p>
             </div>
           </div>
@@ -267,32 +308,56 @@ export default function AffordabilityPage() {
 
         {mode === "vacation" && (
           <div className="rounded-3xl bg-white p-8 border border-slate-200 shadow-sm space-y-6">
-            <h2 className="text-xl font-semibold text-slate-900">
-              Vacation Planning
-            </h2>
-            <p className="text-sm text-slate-500">
-              You can safely allocate 20% of discretionary income toward travel.
-            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Vacation Planning
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Build a vacation fund over 6 months
+                </p>
+              </div>
+              <span className={`text-sm px-3 py-1 rounded-full ${
+                vacationTotal > 0
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-yellow-50 text-yellow-700"
+              }`}>
+                6-month goal: ${vacationTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm text-slate-600 mb-1">
+                <span>Monthly savings goal</span>
+                <span>${vacationMonthly.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+              </div>
+              <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-amber-500 rounded-full transition-all"
+                  style={{ width: `${Math.min((vacationMonthly / discretionary) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-xl p-6">
-                <p className="text-sm text-slate-500">Monthly savings</p>
+                <p className="text-sm text-slate-500">Monthly budget</p>
                 <p className="text-3xl font-semibold text-slate-900">
-                  ${vacationMonthly.toFixed(2)}
+                  ${vacationMonthly.toFixed(0)}
                 </p>
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
-                <p className="text-sm text-emerald-700">6-month trip budget</p>
-                <p className="text-3xl font-semibold text-emerald-700">
+              <div className="bg-slate-50 rounded-xl p-6">
+                <p className="text-sm text-slate-500">6-month total</p>
+                <p className="text-3xl font-semibold text-amber-600">
                   ${vacationTotal.toFixed(0)}
                 </p>
               </div>
             </div>
 
-            {/* Timeline */}
-            <div>
-              <h3 className="font-medium text-slate-900 mb-4">
+            {/* 6-Month Savings Timeline */}
+            <div className="bg-slate-50 rounded-xl p-6 space-y-4">
+              <h3 className="font-semibold text-slate-900">
                 6-Month Savings Timeline
               </h3>
               <div className="space-y-3">
@@ -300,22 +365,28 @@ export default function AffordabilityPage() {
                   const amount = vacationMonthly * m;
                   return (
                     <div key={m} className="flex items-center gap-4">
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-sm text-slate-900">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-sm text-slate-900 font-semibold">
                         {m}
                       </div>
                       <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-emerald-500"
+                          className="h-full bg-amber-500"
                           style={{ width: `${(m / 6) * 100}%` }}
                         />
                       </div>
-                      <span className="text-sm text-slate-700">
+                      <span className="text-sm text-slate-900 font-semibold">
                         ${amount.toFixed(0)}
                       </span>
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Tip:</strong> Save ${vacationMonthly.toFixed(0)}/month consistently. In 6 months you'll have ${vacationTotal.toFixed(0)} for your dream vacation!
+              </p>
             </div>
           </div>
         )}

@@ -8,9 +8,9 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 
 // thresholds + visuals for wellness grade
 function getGrade(score: number) {
-  if (score >= 85) return { label: "Excellent", color: "text-green-600" };
-  if (score >= 70) return { label: "Good", color: "text-green-600" };
-  if (score >= 55) return { label: "Fair", color: "text-yellow-600" };
+  if (score >= 80) return { label: "Excellent", color: "text-green-600" };
+  if (score >= 60) return { label: "Good", color: "text-green-600" };
+  if (score >= 40) return { label: "Fair", color: "text-yellow-600" };
   return { label: "Needs Work", color: "text-red-600" };
 }
 
@@ -19,6 +19,7 @@ const SAFE_SPEND_RATIO = 0.5;
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
+  const [essentialExpenses, setEssentialExpenses] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function Dashboard() {
       }
 
       try {
-        // Fetch user to get income
+        // Fetch user to get income and essentials
         const userCol = collection(db, "users");
         const userQ = query(userCol, where("uid", "==", user.uid));
         const userSnap = await getDocs(userQ);
@@ -37,6 +38,7 @@ export default function Dashboard() {
         if (!userSnap.empty) {
           const userData = userSnap.docs[0].data();
           setMonthlyIncome(userData.monthlyIncome || 0);
+          setEssentialExpenses(userData.essentialExpenses || 0);
         }
 
         // Fetch transactions
@@ -83,14 +85,21 @@ export default function Dashboard() {
     return map;
   }, [transactions]);
 
-  // simple wellness score rule
+  // Consistent wellness score calculation (same as action plan)
   const wellnessScore = useMemo(() => {
-    const ratio = monthlyIncome > 0 ? totalSpent / monthlyIncome : 0;
-    if (ratio < 0.4) return 90;
-    if (ratio < 0.6) return 75;
-    if (ratio < 0.8) return 55;
-    return 35;
-  }, [totalSpent, monthlyIncome]);
+    if (monthlyIncome === 0) return 50;
+
+    const essentialsRatio = essentialExpenses / monthlyIncome;
+    const discretionarySpent = totalSpent - essentialExpenses;
+    const remainingBudget = monthlyIncome - totalSpent;
+
+    let score = 100;
+    if (essentialsRatio > 0.5) score -= 15; // Too much on essentials
+    if (discretionarySpent > monthlyIncome * 0.3) score -= 20; // High discretionary
+    if (remainingBudget < monthlyIncome * 0.1) score -= 15; // Poor savings rate
+
+    return Math.max(20, Math.min(100, score));
+  }, [totalSpent, monthlyIncome, essentialExpenses]);
 
   // order of categories: preferred first
   const categoryOrder = ["Groceries", "Entertainment", "Shopping"];
@@ -127,7 +136,11 @@ export default function Dashboard() {
 
       <div className="p-6 max-w-7xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold">Hello, you</h1>
+          <h1 className="text-3xl font-semibold">
+            Hello, {auth.currentUser?.email?.split("@")[0] ? 
+            auth.currentUser.email.split("@")[0].charAt(0).toUpperCase() + auth.currentUser.email.split("@")[0].slice(1) : 
+            "You"}
+          </h1>
           <p className="text-gray-600 mt-1">Here’s a snapshot of your finances</p>
         </div>
 
@@ -217,8 +230,8 @@ export default function Dashboard() {
                   return (
                     <div key={category} className="space-y-1">
                       <div className="flex justify-between text-sm text-gray-700">
-                        <span>{category}</span>
-                        <span>${amount.toLocaleString()}</span>
+                        <span>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</span>
+                        <span>${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                       <div className="w-full h-2 bg-gray-200 rounded-full">
                         <div
