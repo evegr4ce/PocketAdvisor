@@ -41,42 +41,9 @@ export default function ChatPage() {
         body: JSON.stringify({ messages: [...messages, userMessage] }),
       });
 
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      let botText = "";
-
-      if (!reader) throw new Error("No response stream");
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const text = line.slice(6);
-            if (text) {
-              botText += text;
-              setMessages((prev) => {
-                const updated = [...prev];
-                const lastMsg = updated[updated.length - 1];
-                if (lastMsg?.sender === "bot") {
-                  updated[updated.length - 1] = {
-                    ...lastMsg,
-                    text: botText,
-                  };
-                } else {
-                  updated.push({ text: botText, sender: "bot" });
-                }
-                return updated;
-              });
-            }
-          }
-        }
-      }
-
+      const data = await res.json();
+      const botMessage: Message = { text: data.reply, sender: "bot" };
+      setMessages((prev) => [...prev, botMessage]);
       setIsLoading(false);
     } catch (err) {
       console.error(err);
@@ -168,11 +135,16 @@ export default function ChatPage() {
             className="flex border-t border-gray-200 p-3 gap-2 items-center"
           >
             <textarea
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-full resize-none bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg resize-none bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-hidden"
               rows={1}
               placeholder="Enter a message..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height =
+                  Math.min(e.currentTarget.scrollHeight, 120) + "px";
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();

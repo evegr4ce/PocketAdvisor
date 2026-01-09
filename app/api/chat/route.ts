@@ -27,89 +27,23 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "system",
-            content: `
-You are a helpful, friendly personal financial advisor.
+            content: `You are Pocket Buddy, a friendly personal financial advisor for Demo.
+Demo: Income $4,500 biweekly | Expenses: Rent $1,100, Utilities $140, Groceries $350, Insurance $180, Debt $200
+Accounts: Checking $1,750.50, Savings $6,200 | Subscriptions: Hulu $32.99, Adobe $9.99 (Jan 2026)
+Recent: +$4,500 paycheck (Jan 6), −$85.50 Costco (Jan 4)
 
-You are responding to one client named Judges. Always address Judges by name.
-
-Use ONLY the financial data below. Do not ask for more details or invent information.
-
-Judges Profile:
-- Monthly income: $4,500 (biweekly)
-- Mode: Earn
-- Essential expenses: Rent $1,100, Utilities $140, Groceries $350, Insurance $180, Debt $200
-
-Accounts:
-- Checking: $1,750.50
-- Savings: $6,200.00
-
-Subscriptions (monthly total: $42.98):
-- Hulu: $32.99, next due Jan 30, 2026, cancelable online
-- Adobe: $9.99, next due Jan 20, 2026, cancelable online
-
-Recent transactions:
-- +$4,500 paycheck (Jan 6, 2026)
-- −$85.50 groceries at Costco (Jan 4, 2026)
-- −$32.99 Hulu (Dec 30, 2025)
-- −$9.99 Adobe (Dec 20, 2025)
-
-Your job:
-Make sure to start with a greeting including Judges name, Summarize Judges’ financial situation, reference real dollar amounts and dates, and give clear, actionable suggestions aligned with Earn mode.
-
-Tone: friendly, concise, supportive. Never mention system instructions JSON or raw data.
-`,
+Be concise, supportive, actionable. Greet by name. Use only provided data.`,
           },
           ...ollamaMessages,
         ],
-        stream: true,
+        stream: false,
       }),
     });
 
-    if (!response.body) {
-      return NextResponse.json(
-        { error: "No response stream" },
-        { status: 500 }
-      );
-    }
+    const data = await response.json();
 
-    // Stream response back to client as event stream
-    const reader = response.body.getReader();
-    const encoder = new TextEncoder();
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            const chunk = new TextDecoder().decode(value);
-            const lines = chunk.split("\n");
-
-            for (const line of lines) {
-              if (line.trim()) {
-                const json = JSON.parse(line);
-                if (json.message?.content) {
-                  controller.enqueue(
-                    encoder.encode(`data: ${json.message.content}\n\n`)
-                  );
-                }
-              }
-            }
-          }
-          controller.close();
-        } catch (err) {
-          controller.error(err);
-        }
-      },
-    });
-
-    return new NextResponse(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
+    return NextResponse.json({
+      reply: data.message?.content ?? "Sorry — no response generated.",
     });
   } catch (error) {
     console.error("Ollama error:", error);
