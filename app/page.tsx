@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import Loader from "@/components/loader";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -29,10 +30,13 @@ export default function Login() {
     } catch (err: any) {
       setError(err.message || "Failed to sign in");
       console.error("Login error:", err);
-    } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div>

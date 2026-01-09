@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
+import Loader from "@/components/loader";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, getDocs, updateDoc, doc, where } from "firebase/firestore";
@@ -89,21 +90,20 @@ export default function SubscriptionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="min-h-screen bg-slate-50">
+          <Navbar />
 
-      <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
+          <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
 
         {/* Header */}
         <div>
           <h1 className="text-3xl font-semibold text-[#0a2540]">Subscriptions</h1>
           <p className="text-slate-500 mt-1">Track, optimize, and reduce recurring expenses.</p>
         </div>
-
-        {loading ? (
-          <div className="text-center text-slate-500">Loading your subscriptions...</div>
-        ) : (
-          <>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -251,10 +251,10 @@ export default function SubscriptionsPage() {
             </div>
           </div>
         )}
-        </>
-        )}
 
-      </div>
-    </div>
+        </div>
+        </div>
+      )}
+    </>
   );
 }

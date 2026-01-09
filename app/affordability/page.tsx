@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/navbar";
+import Loader from "@/components/loader";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -119,10 +120,14 @@ export default function AffordabilityPage() {
   const vacationTotal = vacationMonthly * 6;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="min-h-screen bg-slate-50">
+          <Navbar />
 
-      <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+          <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
 
         {/* Header */}
         <div>
@@ -133,11 +138,6 @@ export default function AffordabilityPage() {
             Understand what you can safely afford for housing, cars, and vacations
           </p>
         </div>
-
-        {loading ? (
-          <div className="text-center text-slate-500">Loading your affordability data...</div>
-        ) : (
-          <>
 
         {/* Account Summary */}
         {accounts.length > 0 && (
@@ -355,34 +355,6 @@ export default function AffordabilityPage() {
               </div>
             </div>
 
-            {/* 6-Month Savings Timeline */}
-            <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-              <h3 className="font-semibold text-slate-900">
-                6-Month Savings Timeline
-              </h3>
-              <div className="space-y-3">
-                {[1, 2, 3, 4, 5, 6].map((m) => {
-                  const amount = vacationMonthly * m;
-                  return (
-                    <div key={m} className="flex items-center gap-4">
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-sm text-slate-900 font-semibold">
-                        {m}
-                      </div>
-                      <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-amber-500"
-                          style={{ width: `${(m / 6) * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-slate-900 font-semibold">
-                        ${amount.toFixed(0)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-sm text-blue-800">
                 <strong>💡 Tip:</strong> Save ${vacationMonthly.toFixed(0)}/month consistently. In 6 months you'll have ${vacationTotal.toFixed(0)} for your dream vacation!
@@ -390,11 +362,9 @@ export default function AffordabilityPage() {
             </div>
           </div>
         )}
-
-        </>
-        )}
-
-      </div>
-    </div>
+        </div>
+        </div>
+      )}
+    </>
   );
 }
