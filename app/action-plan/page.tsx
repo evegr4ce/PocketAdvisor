@@ -273,7 +273,7 @@ export default function ActionPlanPage() {
       {/* Navbar */}
       <Navbar />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12">
+      <div className="ml-64 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-12">
         <div className="mx-auto max-w-6xl space-y-10">
 
           {/* Header */}
@@ -409,7 +409,7 @@ export default function ActionPlanPage() {
                                   : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
                               }`}
                             >
-                              {action.completed ? "Completed" : "Mark Complete"}
+                              {action.completed ? "Completed" : "Uncomplete"}
                             </button>
                           </div>
                         </div>

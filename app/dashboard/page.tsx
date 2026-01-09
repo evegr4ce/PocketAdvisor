@@ -156,10 +156,9 @@ export default function Dashboard() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="min-h-screen bg-[#f8f9fc] text-black">
+        <div className="ml-64 min-h-screen bg-[#f8f9fc] text-black px-6 py-12">
           <Navbar />
-
-          <div className="p-6 max-w-7xl mx-auto space-y-8">
+          <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <h1 className="text-3xl font-semibold">
             Hello, {auth.currentUser?.email?.split("@")[0] ? 

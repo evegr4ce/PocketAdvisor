@@ -60,19 +60,19 @@ export default function ChatPage() {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-semibold text-[#0a2540]">
-            Pocket Buddy
-          </h1>
-          <p className="text-slate-500 mt-1">
-            Your own personal financial advisor
-          </p>
-        </div>
+      <div className="ml-64 min-h-screen bg-slate-50 px-6 py-10">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <div>
+            <h1 className="text-3xl font-semibold text-[#0a2540]">
+              Pocket Buddy
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Your own personal financial advisor
+            </p>
+          </div>
 
-        {/* ChatBox */}
-        <div className="w-full max-w-2xl h-[70vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col mx-auto">
+          {/* ChatBox */}
+          <div className="w-full max-w-2xl h-[70vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col mx-auto\">
           {/* Messages */}
           <ul className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.map((msg, idx) => (
@@ -159,6 +159,7 @@ export default function ChatPage() {
               Send
             </button>
           </form>
+          </div>
         </div>
       </div>
     </div>

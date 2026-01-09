@@ -124,10 +124,9 @@ export default function AffordabilityPage() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="min-h-screen bg-slate-50">
+        <div className="ml-64 min-h-screen bg-slate-50 px-6 py-10">
           <Navbar />
-
-          <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+          <div className="mx-auto max-w-6xl space-y-10">
 
         {/* Header */}
         <div>
@@ -362,6 +361,7 @@ export default function AffordabilityPage() {
             </div>
           </div>
         )}
+
         </div>
         </div>
       )}
