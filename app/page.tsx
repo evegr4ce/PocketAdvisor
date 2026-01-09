@@ -1,12 +1,39 @@
 
 "use client";
-import { useState} from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase/config";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Failed to sign in");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <section className="bg-white min-h-screen">
@@ -25,13 +52,17 @@ export default function Login() {
           <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 sm:max-w-md xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 
-
-
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                 Sign in to your account
               </h1>
 
-              <form className="space-y-4 md:space-y-6" action="#">
+              {error && (
+                <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
+              <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
 
                 <div>
                   <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
@@ -67,13 +98,10 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-800 text-white hover:bg-blue-900 cursor-pointer focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/dashboard");
-                  }}
+                  disabled={loading}
+                  className="w-full bg-blue-800 text-white hover:bg-blue-900 disabled:bg-gray-400 cursor-pointer focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors"
                 >
-                  Sign in
+                  {loading ? "Signing in..." : "Sign in"}
                 </button>
 
                 <p className="text-sm font-light text-gray-500">

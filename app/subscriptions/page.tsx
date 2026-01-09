@@ -1,47 +1,84 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
+import { auth, db } from "@/lib/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, getDocs, updateDoc, doc, where } from "firebase/firestore";
 
 type Subscription = {
   id: string;
   merchant: string;
   category: string;
-  monthly: number;
+  amount: number;
   daysUsed: number;
   status: "active" | "flagged" | "canceled";
 };
 
-const userName = "You";
-
-const demoSubs: Subscription[] = [
-  { id: "1", merchant: "Netflix", category: "Entertainment", monthly: 15.99, daysUsed: 18, status: "active" },
-  { id: "2", merchant: "Spotify Premium", category: "Entertainment", monthly: 10.99, daysUsed: 25, status: "active" },
-  { id: "3", merchant: "Amazon Prime", category: "Shopping", monthly: 14.99, daysUsed: 8, status: "active" },
-  { id: "4", merchant: "Adobe Creative Cloud", category: "Software", monthly: 54.99, daysUsed: 3, status: "active" },
-  { id: "5", merchant: "Planet Fitness", category: "Health", monthly: 24.99, daysUsed: 2, status: "active" },
-  { id: "6", merchant: "Hulu", category: "Entertainment", monthly: 17.99, daysUsed: 4, status: "active" },
-];
-
 export default function SubscriptionsPage() {
-  const [subs, setSubs] = useState<Subscription[]>(demoSubs);
+  const [subs, setSubs] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showOptimize, setShowOptimize] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch subscriptions from top-level collection filtered by userId
+        const subsRef = collection(db, "subscriptions");
+        const q = query(subsRef, where("userId", "==", user.uid));
+        const subsSnap = await getDocs(q);
+        
+        const subscriptionsList = subsSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Subscription[];
+        
+        setSubs(subscriptionsList);
+      } catch (error) {
+        console.error("Error fetching subscriptions:", error);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const lowUsage = subs.filter(s => s.daysUsed <= 4 && s.status === "active");
   const suggested = lowUsage.slice(0, 3);
 
-  const monthlySavings = suggested.reduce((sum, s) => sum + s.monthly, 0);
+  const monthlySavings = suggested.reduce((sum, s) => sum + s.amount, 0);
   const yearlySavings = monthlySavings * 12;
+  const userName = auth.currentUser?.email?.split("@")[0] || "You";
 
-  const cancelSuggested = () => {
-    setSubs(prev =>
-      prev.map(s =>
-        suggested.some(c => c.id === s.id)
-          ? { ...s, status: "canceled" }
-          : s
-      )
-    );
-    setShowOptimize(false);
+  const cancelSuggested = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      // Update each suggested subscription to "canceled"
+      for (const sub of suggested) {
+        const subRef = doc(db, "subscriptions", sub.id);
+        await updateDoc(subRef, { status: "canceled" });
+      }
+
+      // Update local state
+      setSubs(prev =>
+        prev.map(s =>
+          suggested.some(c => c.id === s.id)
+            ? { ...s, status: "canceled" }
+            : s
+        )
+      );
+      setShowOptimize(false);
+    } catch (error) {
+      console.error("Error canceling subscriptions:", error);
+    }
   };
 
   return (
@@ -56,12 +93,17 @@ export default function SubscriptionsPage() {
           <p className="text-slate-500 mt-1">Track, optimize, and reduce recurring expenses.</p>
         </div>
 
+        {loading ? (
+          <div className="text-center text-slate-500">Loading your subscriptions...</div>
+        ) : (
+          <>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <p className="text-sm text-slate-500">Active subscriptions</p>
             <p className="text-3xl font-semibold text-[#0a2540] mt-1">
-              ${subs.filter(s => s.status === "active").reduce((s, a) => s + a.monthly, 0).toFixed(2)}
+              ${subs.filter(s => s.status === "active").reduce((s, a) => s + a.amount, 0).toFixed(2)}
               <span className="text-base text-slate-500"> /mo</span>
             </p>
             <p className="text-sm text-slate-500 mt-1">{subs.length} services</p>
@@ -111,7 +153,7 @@ export default function SubscriptionsPage() {
                   <td className={`px-6 py-4 font-semibold ${
                     sub.daysUsed <= 4 ? "text-[#d92d2d]" : "text-[#0a2540]"
                   }`}>
-                    ${sub.monthly.toFixed(2)}
+                    ${sub.amount.toFixed(2)}
                   </td>
 
                   <td className="px-6 py-4">
@@ -158,8 +200,8 @@ export default function SubscriptionsPage() {
                         </span>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-semibold text-[#d92d2d]">${sub.monthly.toFixed(2)}/mo</p>
-                        <p className="text-sm text-slate-500">${(sub.monthly * 12).toFixed(2)}/yr</p>
+                        <p className="text-lg font-semibold text-[#d92d2d]">${sub.amount.toFixed(2)}/mo</p>
+                        <p className="text-sm text-slate-500">${(sub.amount * 12).toFixed(2)}/yr</p>
                       </div>
                     </div>
 
@@ -201,6 +243,8 @@ export default function SubscriptionsPage() {
 
             </div>
           </div>
+        )}
+        </>
         )}
 
       </div>

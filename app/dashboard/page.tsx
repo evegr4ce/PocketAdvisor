@@ -3,47 +3,85 @@
     import Navbar from "@/components/navbar";
     import MetricCard from "../../components/metricCard"
 
-    import { useState, useMemo } from "react";
+    import { useState, useMemo, useEffect } from "react";
+    import { auth, db } from "@/lib/firebase/config";
+    import { onAuthStateChanged } from "firebase/auth";
+    import { collection, query, where, getDocs } from "firebase/firestore";
 
-    // replace this mock data with function that gets data of the user from the database!!!!!!
-    const transactions = [
-        { id: 1, category: "Housing", amount: 1450 },
-        { id: 2, category: "Food", amount: 420 },
-        { id: 3, category: "Transportation", amount: 210 },
-        { id: 4, category: "Subscriptions", amount: 85 },
-        { id: 5, category: "Entertainment", amount: 160 },
-        { id: 6, category: "Wellness", amount: 95 },
-    ];
-    const MONTHLY_INCOME = 4000;
     const SAFE_SPEND_RATIO = 0.5;
 
-
     export default function Dashboard () {
+        const [transactions, setTransactions] = useState<any[]>([]);
+        const [monthlyIncome, setMonthlyIncome] = useState(0);
+        const [loading, setLoading] = useState(true);
+
+        useEffect(() => {
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    setLoading(false);
+                    return;
+                }
+
+                try {
+                    // Fetch user data to get income
+                    const userDocRef = collection(db, "users");
+                    const q = query(userDocRef, where("uid", "==", user.uid));
+                    const userSnap = await getDocs(q);
+                    
+                    if (!userSnap.empty) {
+                        const userData = userSnap.docs[0].data();
+                        setMonthlyIncome(userData.monthlyIncome || 0);
+                    }
+
+                    // Fetch transactions from top-level collection filtered by userId
+                    const transactionsRef = collection(db, "transactions");
+                    const transQuery = query(transactionsRef, where("userId", "==", user.uid));
+                    const transSnap = await getDocs(transQuery);
+                    
+                    const transactionsList = transSnap.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    
+                    setTransactions(transactionsList);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            return () => unsubscribe();
+        }, []);
         const totalSpent = useMemo(
-            () => transactions.reduce((sum, t) => sum + t.amount, 0),
-            []
+            () => transactions
+                .filter(t => t.amount < 0) // Only count expenses
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0),
+            [transactions]
         );
 
         const safeToSpend = useMemo(
-            () => MONTHLY_INCOME * SAFE_SPEND_RATIO - totalSpent,
-            [totalSpent]
+            () => monthlyIncome * SAFE_SPEND_RATIO - totalSpent,
+            [totalSpent, monthlyIncome]
         );
 
         const spendingByCategory = useMemo(() => {
         const map: Record<string, number> = {};
-        transactions.forEach((t) => {
-            map[t.category] = (map[t.category] || 0) + t.amount;
-        });
+        transactions
+            .filter(t => t.amount < 0) // Only expenses
+            .forEach((t) => {
+                map[t.category] = (map[t.category] || 0) + Math.abs(t.amount);
+            });
         return map;
-        }, []);
+        }, [transactions]);
 
         const wellnessScore = useMemo(() => {
-        const ratio = totalSpent / MONTHLY_INCOME;
+        const ratio = monthlyIncome > 0 ? totalSpent / monthlyIncome : 0;
             if (ratio < 0.4) return 90;
             if (ratio < 0.6) return 75;
             if (ratio < 0.8) return 55;
             return 35;
-        }, [totalSpent]);
+        }, [totalSpent, monthlyIncome]);
 
 
         return (
@@ -51,6 +89,10 @@
             <Navbar></Navbar>
             <h1 className="text-3xl font-semibold mb-6 pt-10">Financial Dashboard</h1>
 
+            {loading ? (
+                <div className="text-center text-gray-500">Loading your data...</div>
+            ) : (
+                <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <MetricCard
                     title="Month-to-date Spend"
@@ -62,7 +104,7 @@
                 />
                 <MetricCard
                     title="Monthly Income"
-                    value={`$${MONTHLY_INCOME.toLocaleString()}`}
+                    value={`$${monthlyIncome.toLocaleString()}`}
                 />
                 <MetricCard
                     title="Wellness Score"
@@ -89,6 +131,8 @@
                     })}
                     </div>
                 </div>
+                </>
+            )}
             </div>
         );
     }

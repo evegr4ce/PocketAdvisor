@@ -2,10 +2,15 @@
 
 import React, { useState, Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebase/config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +32,47 @@ export default function Signup() {
     ["Minimum debt payments", debt, setDebt],
    ];
 
-   const [mode, setMode] = useState<"save" | "earn" | "">("");
+   const [mode, setMode] = useState<"save" | "earn" | "">(""); const handleSubmit = async () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      // Create Firebase user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Save user data to Firestore
+      const userDocRef = doc(db, "users", uid);
+      await setDoc(userDocRef, {
+        uid,
+        email,
+        monthlyIncome: income,
+        payFrequency,
+        mode,
+        essentialExpenses: {
+          rent,
+          utilities,
+          groceries,
+          insurance,
+          debt,
+        },
+        createdAt: new Date(),
+      });
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Failed to create account");
+      console.error("Signup error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="bg-white min-h-screen">
@@ -50,6 +95,8 @@ export default function Signup() {
                 <h2 className="text-xl font-bold text-gray-900">
                   Create your account
                 </h2>
+
+                {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>}
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-800">
@@ -235,13 +282,11 @@ export default function Signup() {
                     </button>
 
                     <button
-                        className="w-full bg-blue-800 text-white hover:bg-blue-900 rounded-lg py-2.5"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            router.push("/dashboard");
-                        }}
+                        className="w-full bg-blue-800 text-white hover:bg-blue-900 rounded-lg py-2.5 disabled:bg-gray-400"
+                        onClick={handleSubmit}
+                        disabled={loading}
                     >
-                        Submit
+                        {loading ? "Creating account..." : "Submit"}
                     </button>
                     </div>
                 </>

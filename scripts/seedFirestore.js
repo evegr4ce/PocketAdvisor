@@ -89,7 +89,7 @@ async function main() {
   }
 
   if (purge) {
-    const cols = ['users','accounts','budgets','goals','subscriptions','transactions'];
+    const cols = ['accounts','budgets','goals','subscriptions','transactions'];
     for (const c of cols) { await purgeCollection(c); }
   }
 
@@ -109,7 +109,6 @@ async function main() {
     console.log(`[Seeder] Wrote ${docs.length} to ${col}`);
   }
 
-  await writeBatch('users', users, 'uid');
   await writeBatch('accounts', accounts, 'id');
   await writeBatch('goals', goals, 'id');
   await writeBatch('subscriptions', subscriptions, 'id');
