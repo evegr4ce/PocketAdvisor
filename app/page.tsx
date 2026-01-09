@@ -188,12 +188,14 @@ export default function Login() {
                   </div>
                 </div>
 
+                <div className="flex items-center">
                 <a
                   href="/signup"
                   className="w-full py-3 px-4 border-2 border-[#282880] text-[#282880] font-semibold rounded-lg hover:bg-slate-50 transition-colors duration-200 text-center"
                 >
                   Create Account
                 </a>
+                </div>
               </form>
             </div>
 
