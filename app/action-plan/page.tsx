@@ -286,7 +286,7 @@ export default function ActionPlanPage() {
       {/* Navbar */}
       <Navbar />
 
-      <div className="ml-64 min-h-screen bg-[#efeffcff] from-slate-50 to-slate-100 px-6 py-12">
+      <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-12">
         <div className="mx-auto max-w-6xl space-y-10">
 
           {/* Header */}
