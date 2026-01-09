@@ -236,9 +236,9 @@ export default function ActionPlanPage() {
 
     // Detect milestones
     const completedActions = generatedActions.filter(a => a.completed).length;
-    if (completedActions === 1) setMilestone("🎉 Great start! You've completed your first action.");
-    else if (completedActions === generatedActions.length) setMilestone("🏆 Excellent! You've completed all recommended actions.");
-    else if (completedActions > 0) setMilestone(`✨ Progress! You've completed ${completedActions} of ${generatedActions.length} actions.`);
+    if (completedActions === 1) setMilestone("Great start! You've completed your first action.");
+    else if (completedActions === generatedActions.length) setMilestone("Excellent! You've completed all recommended actions.");
+    else if (completedActions > 0) setMilestone(`Progress! You've completed ${completedActions} of ${generatedActions.length} actions.`);
     else setMilestone("");
 
     setScore(calculatedScore);
@@ -250,9 +250,9 @@ export default function ActionPlanPage() {
   // Recompute milestone when actions change
   useEffect(() => {
     const completedActions = actions.filter(a => a.completed).length;
-    if (completedActions === 1) setMilestone("🎉 Great start! You've completed your first action.");
-    else if (completedActions === actions.length && actions.length > 0) setMilestone("🏆 Excellent! You've completed all recommended actions.");
-    else if (completedActions > 0) setMilestone(`✨ Progress! You've completed ${completedActions} of ${actions.length} actions.`);
+    if (completedActions === 1) setMilestone("Great start! You've completed your first action.");
+    else if (completedActions === actions.length && actions.length > 0) setMilestone("Excellent! You've completed all recommended actions.");
+    else if (completedActions > 0) setMilestone(`Progress! You've completed ${completedActions} of ${actions.length} actions.`);
     else setMilestone("");
   }, [actions]);
 
@@ -263,9 +263,9 @@ export default function ActionPlanPage() {
   };
 
   const priorityStyles = (p: ActionItem["priority"]) => {
-    if (p === "high") return "border-red-500 bg-red-50 text-red-700";
-    if (p === "medium") return "border-yellow-500 bg-yellow-50 text-yellow-700";
-    return "border-blue-500 bg-blue-50 text-blue-700";
+    if (p === "high") return "border-[#d92d2d] bg-red-50 text-[#d92d2d]";
+    if (p === "medium") return "border-[#5a55d5ff] bg-purple-50 text-[#5a55d5ff]";
+    return "border-[#282880] bg-blue-50 text-[#282880]";
   };
 
   if (loading) {
@@ -333,7 +333,7 @@ export default function ActionPlanPage() {
                     cy="50"
                     r="45"
                     fill="none"
-                    stroke="#10b981"
+                    stroke="#282880"
                     strokeWidth="8"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 45}
@@ -378,7 +378,7 @@ export default function ActionPlanPage() {
               <h2 className="text-xl font-semibold text-slate-900">
                 Action Steps
               </h2>
-              <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600">
+              <span className="rounded-full bg-purple-100 px-3 py-1 text-sm text-[#5a55d5ff]">
                 {actions.length} items
               </span>
             </div>
@@ -386,18 +386,17 @@ export default function ActionPlanPage() {
             {open && (
               <div className="space-y-4">
                 {actions.length > 0 ? (
-                  actions.map(action => (
+                  actions
+                    .sort((a, b) => {
+                      const priorityOrder = { high: 0, medium: 1, low: 2 };
+                      return priorityOrder[a.priority] - priorityOrder[b.priority];
+                    })
+                    .map(action => (
                     <div
                       key={action.id}
                       className={`rounded-xl border-l-4 p-5 ${priorityStyles(action.priority)} ${action.completed ? "opacity-60" : ""}`}
                     >
                       <div className="flex items-start gap-4">
-                        <input
-                          type="checkbox"
-                          checked={action.completed}
-                          onChange={() => toggleComplete(action.id)}
-                          className="w-5 h-5 mt-1 cursor-pointer"
-                        />
                         <div className="flex-1">
                           <span className="text-xs font-semibold uppercase">
                             {action.priority} priority
@@ -418,17 +417,17 @@ export default function ActionPlanPage() {
                               onClick={() => toggleComplete(action.id)}
                               className={`text-sm px-3 py-1 rounded-lg border ${
                                 action.completed
-                                  ? "bg-emerald-600 text-white border-emerald-600"
+                                  ? "bg-[#282880] text-white border-[#282880]"
                                   : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
                               }`}
                             >
-                              {action.completed ? "Completed" : "Uncomplete"}
+                              {action.completed ? "Completed" : "Mark as Complete"}
                             </button>
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))
+                    ))
                 ) : (
                   <p className="text-slate-500 text-center py-8">No actions needed - you're doing great!</p>
                 )}
@@ -451,9 +450,9 @@ export default function ActionPlanPage() {
                 <Line 
                   type="monotone" 
                   dataKey="score" 
-                  stroke="#10b981" 
+                  stroke="#282880" 
                   strokeWidth={3}
-                  dot={{ fill: "#10b981", r: 5 }}
+                  dot={{ fill: "#282880", r: 5 }}
                   activeDot={{ r: 7 }}
                 />
               </LineChart>
