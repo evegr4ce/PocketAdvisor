@@ -15,13 +15,13 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+    <nav className="w-full flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-[#eeeefb]">
       <div className="flex gap-6">
         {navItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className={`text-sm font-medium ${
+            className={`text-sm font-medium pb-1 ${
               pathname === item.href
                 ? "text-black border-b-2 border-black"
                 : "text-gray-500 hover:text-black"
@@ -34,4 +34,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
