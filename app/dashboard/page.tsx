@@ -131,6 +131,54 @@ export default function Dashboard() {
     return map;
   }, [transactions]);
 
+  // Estimate assets over the last 6 weeks using weekly net flows
+  const assetsOverTime = useMemo(() => {
+    const now = new Date();
+    const weeks = Array.from({ length: 6 }, (_, idx) => {
+      const offsetWeeks = 5 - idx; // 5 -> oldest week start
+      const start = new Date(now);
+      start.setHours(0, 0, 0, 0);
+      start.setDate(now.getDate() - offsetWeeks * 7);
+      const label = `${start.getMonth() + 1}/${start.getDate()}`;
+      return { label, start };
+    });
+
+    const weeklyNet = new Array(weeks.length).fill(0);
+
+    transactions.forEach((t) => {
+      const transDate = t.timestamp?.toDate?.() || new Date(t.date);
+      transDate.setHours(0, 0, 0, 0);
+      for (let i = 0; i < weeks.length; i++) {
+        const start = weeks[i].start;
+        const end = new Date(start);
+        end.setDate(start.getDate() + 7);
+        if (transDate >= start && transDate < end) {
+          weeklyNet[i] += t.amount; // income positive, spend negative
+          break;
+        }
+      }
+    });
+
+    // Reconstruct balances forward: derive starting balance then add weekly nets
+    const currentTotal = checkingBalance + savingsBalance;
+    const totalNet = weeklyNet.reduce((s, v) => s + v, 0);
+    const startingBalance = currentTotal - totalNet;
+    const balances = new Array(weeks.length).fill(0);
+    let running = startingBalance;
+    for (let i = 0; i < weeks.length; i++) {
+      running += weeklyNet[i];
+      balances[i] = running;
+    }
+
+    const points = weeks.map((w, idx) => ({ label: w.label, value: balances[idx] }));
+    const values = points.map((p) => p.value);
+    const max = Math.max(...values, 0);
+    const min = Math.min(...values, 0);
+    const range = Math.max(max - min, 1);
+
+    return { points, min, range, max };
+  }, [transactions, checkingBalance, savingsBalance]);
+
   // Consistent wellness score calculation (same as action plan)
   const wellnessScore = useMemo(() => {
     if (monthlyIncome === 0) return 50;
@@ -192,7 +240,7 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-semibold">
                   Hello, {auth.currentUser?.email?.split("@")[0] ? 
                   auth.currentUser.email.split("@")[0].charAt(0).toUpperCase() + auth.currentUser.email.split("@")[0].slice(1) : 
-                  "You"}
+                  "You"}!
                 </h1>
                 <p className="text-gray-600 mt-1">Here's a snapshot of your finances</p>
               </div>
@@ -284,6 +332,59 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Assets over time */}
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h2 className="text-xl font-medium text-gray-900 mb-4">Assets Over Time</h2>
+              {assetsOverTime.points.every((p) => p.value === 0) ? (
+                <p className="text-sm text-gray-500">No asset data yet</p>
+              ) : (
+                <div className="h-64 w-full">
+                  {(() => {
+                    const width = 720;
+                    const height = 240;
+                    const padding = 24;
+                    const pts = assetsOverTime.points;
+                    const xStep = pts.length > 1 ? (width - padding * 2) / (pts.length - 1) : 0;
+                    const yScale = assetsOverTime.range > 0 ? (height - padding * 2) / assetsOverTime.range : 1;
+                    const yBase = height - padding;
+
+                    const coords = pts.map((p, idx) => {
+                      const x = padding + idx * xStep;
+                      const y = yBase - (p.value - assetsOverTime.min) * yScale;
+                      return { x, y, label: p.label, value: p.value };
+                    });
+
+                    const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x},${c.y}`).join(' ');
+                    const areaPath = `${coords.length ? 'M' + coords[0].x + ',' + yBase : ''} ` +
+                      coords.map((c) => `L${c.x},${c.y}`).join(' ') +
+                      (coords.length ? ` L${coords[coords.length - 1].x},${yBase} Z` : '');
+
+                    return (
+                      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Assets over time line chart" className="w-full h-full">
+                        <defs>
+                          <linearGradient id="assetsArea" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stopColor="#282880" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#282880" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        <path d={areaPath} fill="url(#assetsArea)" stroke="none" />
+                        <path d={linePath} fill="none" stroke="#282880" strokeWidth="3" strokeLinecap="round" />
+                        {coords.map((c) => (
+                          <g key={c.label}>
+                            <circle cx={c.x} cy={c.y} r={4} fill="#282880" />
+                            <text x={c.x} y={c.y - 8} textAnchor="middle" className="text-[10px] fill-gray-700">
+                              {c.value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            </text>
+                            <text x={c.x} y={height - 6} textAnchor="middle" className="text-[10px] fill-gray-600">{c.label}</text>
+                          </g>
+                        ))}
+                      </svg>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
             {/* spending by category */}

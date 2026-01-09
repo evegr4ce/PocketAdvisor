@@ -94,8 +94,8 @@ export default function ChatPage() {
       <Navbar />
 
       <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-10">
-        <div className="mx-auto max-w-6xl space-y-10">
-          <div>
+        <div className="mx-auto max-w-6xl flex flex-col items-center justify-center gap-8 min-h-[80vh]">
+          <div className="w-full max-w-2xl self-start text-left">
             <h1 className="text-3xl font-semibold text-[#0a2540]">
               Pocket Buddy
             </h1>
@@ -105,7 +105,7 @@ export default function ChatPage() {
           </div>
 
           {/* ChatBox */}
-          <div className="w-full max-w-2xl h-[70vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col mx-auto\">
+          <div className="w-full max-w-2xl h-[70vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col">
             {/* Messages */}
             <ul className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.map((msg, idx) => (

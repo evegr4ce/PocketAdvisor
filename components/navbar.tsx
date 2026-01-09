@@ -27,17 +27,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed left-0 top-0 h-screen w-64 flex flex-col border-r border-gray-200 bg-[#5a55d5ff] pt-2 pb-6 px-6">
-      {/* Logo */}
-      <div className="-mt-2 mb-6 flex items-center -ml-2">
-        <img
-          src="/pocket_logo.png"
-          alt="PocketAdvisor Logo"
-          className="h-32 w-32"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 flex-1">
+    <nav className="fixed left-0 top-0 h-screen w-64 flex flex-col border-r border-gray-200 bg-[#5a55d5ff] pt-4 pb-6 px-6">
+      <div className="flex flex-col gap-2 mt-6">
         {navItems.map((item) => (
           <Link
             key={item.name}
@@ -58,12 +49,22 @@ export default function Navbar() {
           </Link>
         ))}
       </div>
-      <button
-        onClick={handleLogout}
-        className="text-sm font-medium text-white hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/20 w-full text-left"
-      >
-        Logout
-      </button>
+      <div className="flex-1" />
+      <div className="mt-auto pt-3 -mb-6">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={handleLogout}
+            className="text-sm font-medium text-white hover:text-white transition-colors px-4 py-2 -mb-6 rounded-lg hover:bg-white/20 text-left"
+          >
+            Logout
+          </button>
+          <img
+            src="/pocket_logo.png"
+            alt="PocketAdvisor Logo"
+            className="h-32 w-32 -mr-6"
+          />
+        </div>
+      </div>
     </nav>
   );
 }
