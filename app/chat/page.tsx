@@ -168,7 +168,7 @@ export default function ChatPage() {
               className="flex border-t border-gray-200 p-3 gap-2 items-center"
             >
               <textarea
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg resize-none bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-hidden"
+                className="flex-1 px-4 py-2 text-black border border-gray-300 rounded-lg resize-none bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-hidden"
                 rows={1}
                 placeholder="Enter a message..."
                 value={input}
