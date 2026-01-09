@@ -20,6 +20,7 @@ export default function SubscriptionsPage() {
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOptimize, setShowOptimize] = useState(false);
+  const [selectedToCancel, setSelectedToCancel] = useState<string[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -54,36 +55,37 @@ export default function SubscriptionsPage() {
   const lowUsage = subs.filter(s => s.daysUsed <= 4 && s.status === "active");
   const suggested = lowUsage.slice(0, 3);
 
-  const monthlySavings = suggested.reduce((sum, s) => sum + s.amount, 0);
-  const yearlySavings = monthlySavings * 12;
-  const userName = auth.currentUser?.email?.split("@")[0] || "You";
-  
-  // Calculate weeks of groceries (assuming ~$250/month grocery budget = ~$58/week)
-  const groceryBudgetPerWeek = 250 / 4.33;
-  const weeksOfGroceries = Math.round(monthlySavings / groceryBudgetPerWeek);
-  
-  // Calculate months to save $500
-  const monthsToSave500 = Math.ceil(500 / monthlySavings);
+  const totalMonthlySavings = suggested.reduce((sum, s) => sum + s.amount, 0);
+  const selectedMonthlySavings = suggested.filter(s => selectedToCancel.includes(s.id)).reduce((sum, s) => sum + s.amount, 0);
+  const email = auth.currentUser?.email?.split("@")[0] || "You";
+  const userName = email.charAt(0).toUpperCase() + email.slice(1).toLowerCase();
 
   const cancelSuggested = async () => {
     const user = auth.currentUser;
     if (!user) return;
 
     try {
-      // Update each suggested subscription to "canceled"
-      for (const sub of suggested) {
-        const subRef = doc(db, "subscriptions", sub.id);
+      // Update each selected subscription to "canceled"
+      for (const subId of selectedToCancel) {
+        const subRef = doc(db, "subscriptions", subId);
         await updateDoc(subRef, { status: "canceled" });
       }
 
       // Remove canceled subscriptions from local state
       setSubs(prev =>
-        prev.filter(s => !suggested.some(c => c.id === s.id))
+        prev.filter(s => !selectedToCancel.includes(s.id))
       );
       setShowOptimize(false);
+      setSelectedToCancel([]);
     } catch (error) {
       console.error("Error canceling subscriptions:", error);
     }
+  };
+
+  const toggleSubCancel = (subId: string) => {
+    setSelectedToCancel(prev =>
+      prev.includes(subId) ? prev.filter(id => id !== subId) : [...prev, subId]
+    );
   };
 
   return (
@@ -118,7 +120,7 @@ export default function SubscriptionsPage() {
             <p className="text-sm text-slate-500">Low usage detected</p>
             <p className="text-3xl font-semibold text-[#d92d2d] mt-1">{lowUsage.length}</p>
             <p className="text-sm text-slate-500 mt-1">
-              ${monthlySavings.toFixed(2)}/mo wasted
+              ${totalMonthlySavings.toFixed(2)}/mo wasted
             </p>
           </div>
 
@@ -196,52 +198,73 @@ export default function SubscriptionsPage() {
               <div className="space-y-4 max-h-[400px] overflow-y-auto">
                 {suggested.map(sub => (
                   <div key={sub.id} className="border border-slate-200 rounded-xl p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold text-[#0a2540]">{sub.merchant}</p>
-                        <p className="text-sm text-slate-500">{sub.category}</p>
-                        <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-red-100 text-[#d92d2d]">
-                          {sub.daysUsed} days used
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-semibold text-[#d92d2d]">${sub.amount.toFixed(2)}/mo</p>
-                        <p className="text-sm text-slate-500">${(sub.amount * 12).toFixed(2)}/yr</p>
-                      </div>
-                    </div>
+                    <div className="flex gap-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedToCancel.includes(sub.id)}
+                        onChange={() => toggleSubCancel(sub.id)}
+                        className="mt-1 w-5 h-5 cursor-pointer accent-[#d92d2d]"
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="font-semibold text-[#0a2540]">{sub.merchant}</p>
+                            <p className="text-sm text-slate-500">{sub.category}</p>
+                            <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-red-100 text-[#d92d2d]">
+                              {sub.daysUsed} days used
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-semibold text-[#d92d2d]">${sub.amount.toFixed(2)}/mo</p>
+                            <p className="text-sm text-slate-500">${(sub.amount * 12).toFixed(2)}/yr</p>
+                          </div>
+                        </div>
 
-                    <div className="mt-3 bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
-                      <p className="font-medium text-slate-700 mb-1">Alternatives:</p>
-                      <ul className="space-y-1">
-                        <li>→ Switch to free options</li>
-                        <li>→ Downgrade to a cheaper plan</li>
-                        <li>→ Share with family</li>
-                      </ul>
+                        <div className="bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
+                          <p className="font-medium text-slate-700 mb-1">Alternatives:</p>
+                          <ul className="space-y-1">
+                            <li>→ Switch to free options</li>
+                            <li>→ Downgrade to a cheaper plan</li>
+                            <li>→ Share with family</li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-6 border-t border-slate-200 pt-4">
-                <p className="text-lg font-semibold text-[#0050c8]">
-                  {userName}, this saves you ${monthlySavings.toFixed(2)}/mo (${yearlySavings.toFixed(2)}/yr)
-                </p>
-                <p className="text-sm text-slate-500 mt-1">
-                  That's about {weeksOfGroceries} week{weeksOfGroceries !== 1 ? 's' : ''} of groceries or $500 toward emergency savings in {monthsToSave500} month{monthsToSave500 !== 1 ? 's' : ''}.
-                </p>
+                {selectedToCancel.length > 0 ? (
+                  <>
+                    <p className="text-lg font-semibold text-[#0050c8]">
+                      {userName}, this saves you ${selectedMonthlySavings.toFixed(2)}/mo (${(selectedMonthlySavings * 12).toFixed(2)}/yr)
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1">
+                      That's about {Math.round(selectedMonthlySavings / (250 / 4.33))} week{Math.round(selectedMonthlySavings / (250 / 4.33)) !== 1 ? 's' : ''} of groceries or $500 toward emergency savings in {Math.ceil(500 / (selectedMonthlySavings || 1))} month{Math.ceil(500 / (selectedMonthlySavings || 1)) !== 1 ? 's' : ''}.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-slate-500">Select subscriptions above to see potential savings</p>
+                )}
 
                 <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => setShowOptimize(false)}
                     className="flex-1 border border-slate-300 rounded-lg py-2 text-slate-700 hover:bg-slate-100"
                   >
-                    Keep subscriptions
+                    I'll Pass
                   </button>
                   <button
                     onClick={cancelSuggested}
-                    className="flex-1 rounded-lg bg-[#d92d2d] text-white py-2 hover:bg-[#b42323]"
+                    disabled={selectedToCancel.length === 0}
+                    className={`flex-1 rounded-lg text-white py-2 ${
+                      selectedToCancel.length > 0
+                        ? 'bg-[#d92d2d] hover:bg-[#b42323]'
+                        : 'bg-slate-300 cursor-not-allowed'
+                    }`}
                   >
-                    Cancel {suggested.length} subscriptions
+                    I've canceled {selectedToCancel.length} subscription{selectedToCancel.length !== 1 ? 's' : ''}
                   </button>
                 </div>
               </div>
