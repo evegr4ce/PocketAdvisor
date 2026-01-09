@@ -58,10 +58,15 @@ export default function Login() {
               </p>
             </div>
             <div className="space-y-4">
+              {/* Feature 1 */}
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
                   <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
-                    <span className="text-[#282880] font-semibold">✓</span>
+                    <img
+                      src="/bulb.png"
+                      alt="Smart Budget Analysis"
+                      className="h-5 w-5 object-contain"
+                    />
                   </div>
                 </div>
                 <div>
@@ -73,10 +78,16 @@ export default function Login() {
                   </p>
                 </div>
               </div>
+
+              {/* Feature 2 */}
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
                   <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
-                    <span className="text-[#282880] font-semibold">✓</span>
+                    <img
+                      src="/chart-histogram.png"
+                      alt="AI-Powered Advisor"
+                      className="h-5 w-5 object-contain"
+                    />
                   </div>
                 </div>
                 <div>
@@ -88,10 +99,16 @@ export default function Login() {
                   </p>
                 </div>
               </div>
+
+              {/* Feature 3 */}
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
                   <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#282880] bg-opacity-10">
-                    <span className="text-[#282880] font-semibold">✓</span>
+                    <img
+                      src="/comment.png"
+                      alt="Real-time Insights"
+                      className="h-5 w-5 object-contain"
+                    />
                   </div>
                 </div>
                 <div>
