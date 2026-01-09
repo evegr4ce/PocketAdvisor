@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/navbar";
-import Loader from "@/components/loader";
+import "@/components/loader.css";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -121,11 +121,13 @@ export default function AffordabilityPage() {
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="ml-64 min-h-screen bg-slate-50 px-6 py-10">
-          <Navbar />
+      <Navbar />
+      <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-10">
+        {loading ? (
+          <div className="flex items-center justify-center h-[70vh]">
+            <div className="loader"></div>
+          </div>
+        ) : (
           <div className="mx-auto max-w-6xl space-y-10">
 
         {/* Header */}
@@ -362,9 +364,8 @@ export default function AffordabilityPage() {
           </div>
         )}
 
-        </div>
-        </div>
-      )}
+          </div>
+        )}\n      </div>
     </>
   );
 }

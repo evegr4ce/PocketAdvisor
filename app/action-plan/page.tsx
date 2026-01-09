@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/config";
 import Navbar from "@/components/navbar";
-import Loader from "@/components/loader";
+import "@/components/loader.css";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 type ActionItem = {
@@ -217,14 +217,18 @@ export default function ActionPlanPage() {
       calculatedSummary = "Your spending exceeds your income. Review and adjust your budget accordingly.";
     }
 
-    // Generate wellness history (simulate 7-day trend)
+    // Generate wellness history (6 months trend)
     const history: WellnessDataPoint[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const daysAgo = i;
-      const variance = Math.sin(daysAgo / 2) * 5 + (Math.random() - 0.5) * 3;
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const currentDate = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthName = monthNames[monthDate.getMonth()];
+      const variance = Math.sin(i / 2) * 5 + (Math.random() - 0.5) * 3;
       const historicalScore = Math.max(20, Math.min(100, calculatedScore + variance));
       history.push({
-        name: `Day ${7 - i}`,
+        name: monthName,
         score: Math.round(historicalScore),
       });
     }
@@ -265,7 +269,16 @@ export default function ActionPlanPage() {
   };
 
   if (loading) {
-    return <Loader />;
+    return (
+      <>
+        <Navbar />
+        <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-12">
+          <div className="flex items-center justify-center h-[70vh]">
+            <div className="loader"></div>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (

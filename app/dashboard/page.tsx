@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "@/components/navbar";
-import Loader from "@/components/loader";
+import "@/components/loader.css";
 import { useState, useMemo, useEffect } from "react";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
@@ -9,8 +9,8 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 
 // thresholds + visuals for wellness grade
 function getGrade(score: number) {
-  if (score >= 80) return { label: "Excellent", color: "text-green-600" };
-  if (score >= 60) return { label: "Good", color: "text-green-600" };
+  if (score >= 80) return { label: "Excellent", color: "text-[#282880]" };
+  if (score >= 60) return { label: "Good", color: "text-[#282880]" };
   if (score >= 40) return { label: "Fair", color: "text-yellow-600" };
   return { label: "Needs Work", color: "text-red-600" };
 }
@@ -83,7 +83,23 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  const totalSpent = useMemo(
+  const totalSpent = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return transactions
+      .filter((t) => {
+        if (t.amount >= 0) return false; // Only negative amounts (expenses)
+        
+        const transDate = t.timestamp?.toDate?.() || new Date(t.date);
+        return transDate.getMonth() === currentMonth && transDate.getFullYear() === currentYear;
+      })
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  }, [transactions]);
+
+  // Total spending (all time) for wellness score calculation
+  const totalSpentAllTime = useMemo(
     () =>
       transactions
         .filter((t) => t.amount < 0)
@@ -97,9 +113,18 @@ export default function Dashboard() {
   );
 
   const spendingByCategory = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
     const map: Record<string, number> = {};
     transactions
-      .filter((t) => t.amount < 0)
+      .filter((t) => {
+        if (t.amount >= 0) return false;
+        
+        const transDate = t.timestamp?.toDate?.() || new Date(t.date);
+        return transDate.getMonth() === currentMonth && transDate.getFullYear() === currentYear;
+      })
       .forEach((t) => {
         map[t.category] = (map[t.category] || 0) + Math.abs(t.amount);
       });
@@ -111,8 +136,8 @@ export default function Dashboard() {
     if (monthlyIncome === 0) return 50;
 
     const essentialsRatio = essentialExpenses / monthlyIncome;
-    const discretionarySpent = totalSpent - essentialExpenses;
-    const remainingBudget = monthlyIncome - totalSpent;
+    const discretionarySpent = totalSpentAllTime - essentialExpenses;
+    const remainingBudget = monthlyIncome - totalSpentAllTime;
 
     let score = 100;
     if (essentialsRatio > 0.5) score -= 15; // Too much on essentials
@@ -120,7 +145,7 @@ export default function Dashboard() {
     if (remainingBudget < monthlyIncome * 0.1) score -= 15; // Poor savings rate
 
     return Math.max(20, Math.min(100, score));
-  }, [totalSpent, monthlyIncome, essentialExpenses]);
+  }, [totalSpentAllTime, monthlyIncome, essentialExpenses]);
 
   // order of categories: preferred first
   const categoryOrder = ["Groceries", "Entertainment", "Shopping"];
@@ -153,37 +178,37 @@ export default function Dashboard() {
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="ml-64 min-h-screen bg-[#f8f9fc] text-black px-6 py-12">
-          <Navbar />
-          <div className="mx-auto max-w-6xl space-y-8">
-        <div>
-          <h1 className="text-3xl font-semibold">
-            Hello, {auth.currentUser?.email?.split("@")[0] ? 
-            auth.currentUser.email.split("@")[0].charAt(0).toUpperCase() + auth.currentUser.email.split("@")[0].slice(1) : 
-            "You"}
-          </h1>
-          <p className="text-gray-600 mt-1">Here’s a snapshot of your finances</p>
-        </div>
-
+      <Navbar />
+      <div className="ml-64 min-h-screen bg-[#efeffcff] text-black px-6 py-12 flex gap-6">
         {loading ? (
-          <div className="text-center text-gray-500">Loading your data...</div>
+          <div className="flex items-center justify-center h-[70vh] flex-1">
+            <div className="loader"></div>
+          </div>
         ) : (
           <>
-            {/* top row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Main Content */}
+            <div className="flex-1 max-w-4xl space-y-8">
+              <div>
+                <h1 className="text-3xl font-semibold">
+                  Hello, {auth.currentUser?.email?.split("@")[0] ? 
+                  auth.currentUser.email.split("@")[0].charAt(0).toUpperCase() + auth.currentUser.email.split("@")[0].slice(1) : 
+                  "You"}
+                </h1>
+                <p className="text-gray-600 mt-1">Here's a snapshot of your finances</p>
+              </div>
+
+              {/* top row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="rounded-2xl border border-gray-200 bg-white p-6">
                 <h3 className="text-sm font-medium text-gray-500">Month-to-date Spend</h3>
                 <p className="mt-2 text-xl font-semibold">
-                  ${totalSpent.toLocaleString()}
+                  ${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
 
               <div className="rounded-2xl border border-gray-200 bg-white p-6">
                 <h3 className="text-sm font-medium text-gray-500">Safe to Spend</h3>
-                <p className="mt-2 text-xl font-semibold text-green-600">
+                <p className="mt-2 text-xl font-semibold text-[#282880]">
                   ${safeToSpend.toLocaleString()}
                 </p>
               </div>
@@ -235,7 +260,7 @@ export default function Dashboard() {
                       cy={size / 2}
                       r={radius}
                       fill="none"
-                      stroke="#10b981"
+                      stroke="#282880"
                       strokeWidth={strokeWidth}
                       strokeLinecap="round"
                       strokeDasharray={circumference}
@@ -269,17 +294,16 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {orderedCategories.map(([category, amount]) => {
                   const percent =
-                    totalSpent > 0 ? (amount / totalSpent) * 100 : 0;
-                  // clamp width so very long categories don't overflow
+                    totalSpent > 0 ? Math.min((amount / totalSpent) * 100, 100) : 0;
                   return (
                     <div key={category} className="space-y-1">
                       <div className="flex justify-between text-sm text-gray-700">
                         <span>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</span>
                         <span>${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full">
+                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-green-500 rounded-full transition-all"
+                          className="h-full bg-[#282880] rounded-full transition-all"
                           style={{ width: `${percent}%` }}
                         />
                       </div>
@@ -288,11 +312,68 @@ export default function Dashboard() {
                 })}
               </div>
             </div>
+            </div>
+
+            {/* Recent Transactions Sidebar */}
+            <div className="w-80 bg-white rounded-2xl border border-gray-200 p-6 pr-2 self-start sticky top-6" style={{ marginTop: '6rem' }}>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4 pr-4">Recent Transactions</h2>
+              <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto pr-4">
+                {transactions.length === 0 ? (
+                  <p className="text-sm text-gray-500">No transactions yet</p>
+                ) : (
+                  (() => {
+                    // Helper function to convert Firestore timestamp to Date
+                    const toDate = (timestamp: any) => {
+                      if (timestamp?.toDate) {
+                        return timestamp.toDate();
+                      }
+                      return new Date(timestamp);
+                    };
+
+                    // Group transactions by date
+                    const groupedByDate: Record<string, typeof transactions> = {};
+                    transactions
+                      .sort((a, b) => {
+                        const dateA = toDate(a.timestamp);
+                        const dateB = toDate(b.timestamp);
+                        return dateB.getTime() - dateA.getTime();
+                      })
+                      .slice(0, 20)
+                      .forEach((t) => {
+                        const date = toDate(t.timestamp).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                        if (!groupedByDate[date]) {
+                          groupedByDate[date] = [];
+                        }
+                        groupedByDate[date].push(t);
+                      });
+
+                    return Object.entries(groupedByDate).map(([date, dayTransactions]) => (
+                      <div key={date} className="space-y-2">
+                        <p className="text-xs font-medium text-gray-500 uppercase">{date}</p>
+                        {dayTransactions.map((t) => (
+                          <div key={t.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900">{t.merchant || t.category}</p>
+                              <p className="text-xs text-gray-500">{t.category}</p>
+                            </div>
+                            <p className={`text-sm font-semibold ${t.amount < 0 ? 'text-red-600' : 'text-[#282880]'}`}>
+                              {t.amount < 0 ? '-' : '+'}${Math.abs(t.amount).toFixed(2)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ));
+                  })()
+                )}
+              </div>
+            </div>
           </>
         )}
-        </div>
       </div>
-    )}
-  </>
-);
+    </>
+  );
 }

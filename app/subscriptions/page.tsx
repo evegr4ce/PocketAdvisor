@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
-import Loader from "@/components/loader";
+import "@/components/loader.css";
 import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, getDocs, updateDoc, doc, where } from "firebase/firestore";
@@ -39,7 +39,8 @@ export default function SubscriptionsPage() {
           ...doc.data(),
         })) as Subscription[];
         
-        setSubs(subscriptionsList);
+        // Filter out canceled subscriptions
+        setSubs(subscriptionsList.filter(s => s.status !== "canceled"));
       } catch (error) {
         console.error("Error fetching subscriptions:", error);
       } finally {
@@ -75,13 +76,9 @@ export default function SubscriptionsPage() {
         await updateDoc(subRef, { status: "canceled" });
       }
 
-      // Update local state
+      // Remove canceled subscriptions from local state
       setSubs(prev =>
-        prev.map(s =>
-          suggested.some(c => c.id === s.id)
-            ? { ...s, status: "canceled" }
-            : s
-        )
+        prev.filter(s => !suggested.some(c => c.id === s.id))
       );
       setShowOptimize(false);
     } catch (error) {
@@ -91,11 +88,13 @@ export default function SubscriptionsPage() {
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="ml-64 min-h-screen bg-slate-50 px-6 py-10">
-          <Navbar />
+      <Navbar />
+      <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-10">
+        {loading ? (
+          <div className="flex items-center justify-center h-[70vh]">
+            <div className="loader"></div>
+          </div>
+        ) : (
           <div className="mx-auto max-w-6xl space-y-10">
 
         {/* Header */}
@@ -252,8 +251,8 @@ export default function SubscriptionsPage() {
         )}
 
         </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 }

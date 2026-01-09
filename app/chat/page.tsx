@@ -57,10 +57,10 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#efeffcff]">
       <Navbar />
 
-      <div className="ml-64 min-h-screen bg-slate-50 px-6 py-10">
+      <div className="ml-64 min-h-screen bg-[#efeffcff] px-6 py-10">
         <div className="mx-auto max-w-6xl space-y-10">
           <div>
             <h1 className="text-3xl font-semibold text-[#0a2540]">
