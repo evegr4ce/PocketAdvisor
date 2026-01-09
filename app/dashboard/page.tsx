@@ -6,6 +6,14 @@ import { auth, db } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
+// thresholds + visuals for wellness grade
+function getGrade(score: number) {
+  if (score >= 85) return { label: "Excellent", color: "text-green-600" };
+  if (score >= 70) return { label: "Good", color: "text-green-600" };
+  if (score >= 55) return { label: "Fair", color: "text-yellow-600" };
+  return { label: "Needs Work", color: "text-red-600" };
+}
+
 const SAFE_SPEND_RATIO = 0.5;
 
 export default function Dashboard() {
@@ -21,27 +29,29 @@ export default function Dashboard() {
       }
 
       try {
-        const userDocRef = collection(db, "users");
-        const q = query(userDocRef, where("uid", "==", user.uid));
-        const userSnap = await getDocs(q);
+        // Fetch user to get income
+        const userCol = collection(db, "users");
+        const userQ = query(userCol, where("uid", "==", user.uid));
+        const userSnap = await getDocs(userQ);
 
         if (!userSnap.empty) {
           const userData = userSnap.docs[0].data();
           setMonthlyIncome(userData.monthlyIncome || 0);
         }
 
-        const transactionsRef = collection(db, "transactions");
-        const transQuery = query(transactionsRef, where("userId", "==", user.uid));
-        const transSnap = await getDocs(transQuery);
+        // Fetch transactions
+        const transCol = collection(db, "transactions");
+        const transQ = query(transCol, where("userId", "==", user.uid));
+        const transSnap = await getDocs(transQ);
 
-        const transactionsList = transSnap.docs.map((doc) => ({
+        const transList = transSnap.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
-        setTransactions(transactionsList);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+        setTransactions(transList);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
       } finally {
         setLoading(false);
       }
@@ -59,8 +69,8 @@ export default function Dashboard() {
   );
 
   const safeToSpend = useMemo(
-    () => monthlyIncome * SAFE_SPEND_RATIO - totalSpent,
-    [totalSpent, monthlyIncome]
+    () => Math.max(monthlyIncome * SAFE_SPEND_RATIO - totalSpent, 0),
+    [monthlyIncome, totalSpent]
   );
 
   const spendingByCategory = useMemo(() => {
@@ -73,6 +83,7 @@ export default function Dashboard() {
     return map;
   }, [transactions]);
 
+  // simple wellness score rule
   const wellnessScore = useMemo(() => {
     const ratio = monthlyIncome > 0 ? totalSpent / monthlyIncome : 0;
     if (ratio < 0.4) return 90;
@@ -81,85 +92,135 @@ export default function Dashboard() {
     return 35;
   }, [totalSpent, monthlyIncome]);
 
-  const circumference = 2 * Math.PI * 45;
-  const dashOffset = circumference * (1 - wellnessScore / 100);
+  // order of categories: preferred first
+  const categoryOrder = ["Groceries", "Entertainment", "Shopping"];
+  const orderedCategories = useMemo(() => {
+    const entries = Object.entries(spendingByCategory);
+    // sort by preferred order then amount desc
+    return entries
+      .sort((a, b) => {
+        const ia = categoryOrder.indexOf(a[0]);
+        const ib = categoryOrder.indexOf(b[0]);
+        if (ia !== ib) {
+          // if not found, ia or ib is -1 => put found ones first
+          if (ia === -1) return 1;
+          if (ib === -1) return -1;
+          return ia - ib;
+        }
+        // same category priority: larger amount first
+        return b[1] - a[1];
+      });
+  }, [spendingByCategory]);
+
+  // ring settings
+  const size = 120;
+  const strokeWidth = 10;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (wellnessScore / 100) * circumference;
+
+  const grade = getGrade(wellnessScore);
 
   return (
-    <div className="min-h-screen bg-[#f7f8fc] text-black">
+    <div className="min-h-screen bg-[#f8f9fc] text-black">
       <Navbar />
 
-      <div className="max-w-6xl mx-auto p-6 space-y-10">
+      <div className="p-6 max-w-7xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-semibold">Hello, you</h1>
-          <p className="text-gray-500 mt-1">Here’s a snapshot of your finances</p>
+          <p className="text-gray-600 mt-1">Here’s a snapshot of your finances</p>
         </div>
 
         {loading ? (
           <div className="text-center text-gray-500">Loading your data...</div>
         ) : (
           <>
-            {/* 2x2 Metric Grid */}
+            {/* cards 2x2 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Metric title="Month-to-date Spend" value={`$${totalSpent.toLocaleString()}`} />
-              <Metric title="Safe to Spend" value={`$${Math.max(safeToSpend, 0).toLocaleString()}`} highlight />
-              <Metric title="Monthly Income" value={`$${monthlyIncome.toLocaleString()}`} />
+              {/* card 1 */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 className="text-sm font-medium text-gray-500">Month-to-date Spend</h3>
+                <p className="mt-2 text-xl font-semibold">
+                  ${totalSpent.toLocaleString()}
+                </p>
+              </div>
 
-              {/* Wellness Ring */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border">
-                <div className="flex items-center gap-6">
-                  <div className="relative w-24 h-24">
-                    <svg className="absolute w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="45"
-                        fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="8"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="45"
-                        fill="none"
-                        stroke="#22c55e"
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeDasharray={circumference}
-                        strokeDashoffset={dashOffset}
-                        className="transition-all duration-700"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xl font-semibold">{wellnessScore}</span>
-                    </div>
-                  </div>
+              {/* card 2 */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 className="text-sm font-medium text-gray-500">Safe to Spend</h3>
+                <p className="mt-2 text-xl font-semibold text-green-600">
+                  ${safeToSpend.toLocaleString()}
+                </p>
+              </div>
 
-                  <div>
-                    <p className="text-sm text-gray-500">Wellness Score</p>
-                    <p className="text-lg font-semibold text-green-600">
-                      {wellnessScore >= 80 ? "Excellent" : "Needs attention"}
-                    </p>
+              {/* card 3 */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 className="text-sm font-medium text-gray-500">Monthly Income</h3>
+                <p className="mt-2 text-xl font-semibold">
+                  ${monthlyIncome.toLocaleString()}
+                </p>
+              </div>
+
+              {/* card 4: wellness ring */}
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 flex items-center">
+                <div className="relative w-[120px] h-[120px] flex-shrink-0">
+                  <svg width={size} height={size} className="transform -rotate-90">
+                    <circle
+                      cx={size / 2}
+                      cy={size / 2}
+                      r={radius}
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth={strokeWidth}
+                    />
+                    <circle
+                      cx={size / 2}
+                      cy={size / 2}
+                      r={radius}
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth={strokeWidth}
+                      strokeLinecap="round"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={offset}
+                      className="transition-all duration-700 ease-out"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-3xl font-semibold text-gray-900">
+                      {wellnessScore}
+                    </span>
+                    <span className="text-xs text-gray-500">out of 100</span>
                   </div>
+                </div>
+                <div className="ml-6">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Wellness Score
+                  </h3>
+                  <p className={`${grade.color} font-medium mt-1`}>
+                    {grade.label}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Spending by Category (Compact & Visual) */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border">
-              <h2 className="text-lg font-semibold mb-4">Spending by Category</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(spendingByCategory).map(([category, amount]) => {
-                  const percent = (amount / totalSpent) * 100;
+            {/* spending by category */}
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h2 className="text-xl font-medium text-gray-900 mb-4">
+                Spending by Category
+              </h2>
+              <div className="space-y-4">
+                {orderedCategories.map(([category, amount]) => {
+                  const percent =
+                    totalSpent > 0 ? (amount / totalSpent) * 100 : 0;
+                  // clamp width so very long categories don't overflow
                   return (
-                    <div key={category} className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium capitalize">{category}</p>
-                        <p className="text-xs text-gray-500">${amount.toFixed(2)}</p>
+                    <div key={category} className="space-y-1">
+                      <div className="flex justify-between text-sm text-gray-700">
+                        <span>{category}</span>
+                        <span>${amount.toLocaleString()}</span>
                       </div>
-
-                      <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="w-full h-2 bg-gray-200 rounded-full">
                         <div
                           className="h-full bg-green-500 rounded-full transition-all"
                           style={{ width: `${percent}%` }}
@@ -173,26 +234,6 @@ export default function Dashboard() {
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-/* Reusable Metric Card */
-function Metric({
-  title,
-  value,
-  highlight = false,
-}: {
-  title: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className={`text-2xl font-semibold ${highlight ? "text-green-600" : ""}`}>
-        {value}
-      </p>
     </div>
   );
 }
